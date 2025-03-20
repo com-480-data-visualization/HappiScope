@@ -68,21 +68,23 @@ Our project addresses the needs of several key audiences:
 
 ### Exploratory Data Analysis
 
-Our preliminary data analysis reveals several intriguing patterns in the World Happiness Report data:
+Our exploratory phase examined three key datasets through visualizations that track country trajectories over time, compare scores across nations, and map geographic distributions of key metrics:
 
-The happiness scores globally span approximately from 1.7 to 7.8, with considerable variation across countries and regions. As observed in our data, Nordic and Western European countries consistently dominate the top positions, with Finland appearing frequently at the top of the rankings from 2018-2024. Switzerland, Denmark, and other Nordic countries also maintain high positions across the decade.
+- [World Happiness Report Analysis](data/happiness_score_data/data_vis.ipynb)
+- [Human Development Index Analysis](data/hdi_data/HDI_vis.ipynb)
+- [Population Data Analysis](data/population_data/data_vis.ipynb)
 
-From our time series analysis, we can see that several countries demonstrate notable stability in their happiness scores. For instance, Finland has maintained scores above 7.5 from 2020-2024, while countries at the bottom of the rankings like Afghanistan have consistently shown scores below 3.0 in recent years.
+Our preliminary findings reveal several significant patterns in global happiness data:
 
-Our analysis shows distinct regional patterns with evident clustering. European countries (particularly Northern and Western European nations) consistently rank higher, while countries in conflict-affected regions and parts of Sub-Saharan Africa typically rank lower. This geographic pattern suggests the influence of both economic and sociopolitical stability on happiness levels.
+Global happiness scores range from approximately 1.7 to 7.8, with Nordic and Western European countries consistently dominating the top positions. Finland has maintained the highest happiness ranking since 2018, while Switzerland, Denmark, and other Nordic nations consistently appear in top positions throughout the decade.
 
-We observe interesting temporal trends from 2015-2024. For many countries, there is relative stability with gradual changes rather than dramatic shifts. However, certain nations show more pronounced trajectories. For example, in the line charts developed to track happiness and rank over time, we can see that Switzerland had its highest happiness score in 2016, while declining slightly in subsequent years but still maintaining a high global ranking.
+Time series analysis shows notable stability in many countries' happiness trajectories, though with some interesting exceptions. For example, Switzerland peaked in happiness in 2016 and has gradually declined while still maintaining high global standing. China shows steady improvement from 5.2 in 2015 to nearly 6.0 in 2024, while the United States displays more variability with a notable drop in 2024.
 
-The country-specific visualizations demonstrate interesting patterns in happiness factors. For example, in the case of China, we observe a gradual increase in happiness scores from around 5.2 in 2015 to nearly 6.0 in 2024, accompanied by a corresponding improvement in rank. The United States shows more variability, with a notable drop in happiness score and rank in 2024 compared to earlier years.
+Regional patterns are evident, with European countries (particularly Northern and Western) clustering at higher happiness levels, while conflict-affected regions and parts of Sub-Saharan Africa typically rank lower. Our European geographic visualization clearly demonstrates this gradient, with Switzerland (7.06) and Germany (6.72) scoring significantly higher than Southern European nations like Portugal (6.03).
 
-Our European map visualization highlights the geographic distribution of happiness across the continent in 2024, with a clear gradient showing higher scores in Western and Northern Europe (Switzerland at 7.06, Germany at 6.72) compared to Southern Europe (Portugal at 6.03, Spain at 6.42).
+When examining Human Development Index (HDI) data alongside happiness metrics, we observe strong correlation patterns that reinforce regional disparities. Countries with high HDI scores generally report higher happiness levels, suggesting the influence of economic development, life expectancy, and education on subjective well-being.
 
-In our exploratory phase, we've created visualizations including time series tracking of country trajectories, comparative score-rank charts for selected countries, and geographic mapping of happiness distributions. These initial explorations are available in our [Jupyter notebook](data/happiness_score_data/data_vis.ipynb).
+Population trends across countries show interesting relationships with both happiness and development metrics, providing context for understanding how demographic shifts might influence national well-being over time.
 
 ### Related Work
 
