@@ -25,12 +25,14 @@ The World Happiness Report represents a comprehensive global survey of happiness
 The data is collected through the Gallup World Poll, which conducts nationally representative surveys in approximately 150 countries using samples of about 1,000 individuals per country. While the 2015-2020 data is conveniently preprocessed on Kaggle, we'll need to standardize the 2021-2024 data to maintain consistency throughout our analysis.
 
 **Primary Data Sources:**
+
 - [World Happiness Report Official Website](https://worldhappiness.report/) - Annual reports from 2012-2024
 - [Preprocessed Dataset (2015-2020)](https://www.kaggle.com/datasets/yamaerenay/world-happiness-report-preprocessed) - Contains cleaned data
 
 To enrich our analysis and explore correlations between happiness and other socioeconomic factors, we'll incorporate several supplementary datasets:
 
 **Supplementary Data Sources:**
+
 - [Human Development Index (HDI)](https://hdr.undp.org/data-center/human-development-index#/indicies/HDI) - Covers health, education, and income metrics across countries since 1990
 - [Global Health Observatory (WHO)](https://www.who.int/data/gho) - Provides health metrics including mental health indicators and life expectancy data
 - [World Bank Open Data](https://data.worldbank.org/) - Offers economic and social indicators with extensive historical coverage
@@ -118,7 +120,7 @@ For Milestone 2, we plan to develop functional prototypes of our core visualizat
 
 **10% of the final grade**
 
-_Content to be added after completion_
+Please check out our website [here](https://com-480-data-visualization.github.io/HappiScope/).
 
 ## Milestone 3 (30th May, 5pm)
 

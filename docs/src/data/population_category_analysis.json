@@ -1,0 +1,352 @@
+[
+  {
+    "population_category": "Very Small (<10M)",
+    "year": 2015,
+    "score": 5.7214561404,
+    "hdi": 0.7862678571,
+    "num_countries": 57
+  },
+  {
+    "population_category": "Very Small (<10M)",
+    "year": 2016,
+    "score": 5.7163571429,
+    "hdi": 0.7903636364,
+    "num_countries": 56
+  },
+  {
+    "population_category": "Very Small (<10M)",
+    "year": 2017,
+    "score": 5.8425272727,
+    "hdi": 0.7909074074,
+    "num_countries": 55
+  },
+  {
+    "population_category": "Very Small (<10M)",
+    "year": 2018,
+    "score": 5.7793518519,
+    "hdi": 0.7950377358,
+    "num_countries": 54
+  },
+  {
+    "population_category": "Very Small (<10M)",
+    "year": 2019,
+    "score": 5.6888888889,
+    "hdi": 0.7981320755,
+    "num_countries": 54
+  },
+  {
+    "population_category": "Very Small (<10M)",
+    "year": 2020,
+    "score": 5.9201698113,
+    "hdi": 0.7954615385,
+    "num_countries": 53
+  },
+  {
+    "population_category": "Very Small (<10M)",
+    "year": 2021,
+    "score": 5.7823870968,
+    "hdi": 0.7755245902,
+    "num_countries": 62
+  },
+  {
+    "population_category": "Very Small (<10M)",
+    "year": 2022,
+    "score": 5.7926779661,
+    "hdi": 0.781779661,
+    "num_countries": 59
+  },
+  {
+    "population_category": "Very Small (<10M)",
+    "year": 2023,
+    "score": 5.8088490566,
+    "hdi": 0.7897358491,
+    "num_countries": 53
+  },
+  {
+    "population_category": "Very Small (<10M)",
+    "year": 2024,
+    "score": 5.7660701754,
+    "hdi": 0.7821052632,
+    "num_countries": 57
+  },
+  {
+    "population_category": "Small (10-50M)",
+    "year": 2015,
+    "score": 5.0646923077,
+    "hdi": 0.66454,
+    "num_countries": 52
+  },
+  {
+    "population_category": "Small (10-50M)",
+    "year": 2016,
+    "score": 5.0499622642,
+    "hdi": 0.669627451,
+    "num_countries": 53
+  },
+  {
+    "population_category": "Small (10-50M)",
+    "year": 2017,
+    "score": 5.1813518519,
+    "hdi": 0.6778076923,
+    "num_countries": 54
+  },
+  {
+    "population_category": "Small (10-50M)",
+    "year": 2018,
+    "score": 5.1558518519,
+    "hdi": 0.6836153846,
+    "num_countries": 54
+  },
+  {
+    "population_category": "Small (10-50M)",
+    "year": 2019,
+    "score": 5.1240185185,
+    "hdi": 0.6867307692,
+    "num_countries": 54
+  },
+  {
+    "population_category": "Small (10-50M)",
+    "year": 2020,
+    "score": 5.2505185185,
+    "hdi": 0.6775961538,
+    "num_countries": 54
+  },
+  {
+    "population_category": "Small (10-50M)",
+    "year": 2021,
+    "score": 5.2787678571,
+    "hdi": 0.6736792453,
+    "num_countries": 56
+  },
+  {
+    "population_category": "Small (10-50M)",
+    "year": 2022,
+    "score": 5.3470178571,
+    "hdi": 0.6846923077,
+    "num_countries": 56
+  },
+  {
+    "population_category": "Small (10-50M)",
+    "year": 2023,
+    "score": 5.3690188679,
+    "hdi": 0.6912653061,
+    "num_countries": 53
+  },
+  {
+    "population_category": "Small (10-50M)",
+    "year": 2024,
+    "score": 5.3557592593,
+    "hdi": 0.69012,
+    "num_countries": 54
+  },
+  {
+    "population_category": "Medium (50-100M)",
+    "year": 2015,
+    "score": 5.3812142857,
+    "hdi": 0.7780769231,
+    "num_countries": 14
+  },
+  {
+    "population_category": "Medium (50-100M)",
+    "year": 2016,
+    "score": 5.4772307692,
+    "hdi": 0.7878333333,
+    "num_countries": 13
+  },
+  {
+    "population_category": "Medium (50-100M)",
+    "year": 2017,
+    "score": 5.4295384615,
+    "hdi": 0.7933333333,
+    "num_countries": 13
+  },
+  {
+    "population_category": "Medium (50-100M)",
+    "year": 2018,
+    "score": 5.3481428571,
+    "hdi": 0.7823076923,
+    "num_countries": 14
+  },
+  {
+    "population_category": "Medium (50-100M)",
+    "year": 2019,
+    "score": 5.3495714286,
+    "hdi": 0.7877692308,
+    "num_countries": 14
+  },
+  {
+    "population_category": "Medium (50-100M)",
+    "year": 2020,
+    "score": 5.465,
+    "hdi": 0.7820714286,
+    "num_countries": 15
+  },
+  {
+    "population_category": "Medium (50-100M)",
+    "year": 2021,
+    "score": 5.5661428571,
+    "hdi": 0.7813571429,
+    "num_countries": 14
+  },
+  {
+    "population_category": "Medium (50-100M)",
+    "year": 2022,
+    "score": 5.5491428571,
+    "hdi": 0.7867857143,
+    "num_countries": 14
+  },
+  {
+    "population_category": "Medium (50-100M)",
+    "year": 2023,
+    "score": 5.4996923077,
+    "hdi": 0.7914615385,
+    "num_countries": 13
+  },
+  {
+    "population_category": "Medium (50-100M)",
+    "year": 2024,
+    "score": 5.4590714286,
+    "hdi": 0.7742142857,
+    "num_countries": 14
+  },
+  {
+    "population_category": "Large (100-500M)",
+    "year": 2015,
+    "score": 5.6538181818,
+    "hdi": 0.6980909091,
+    "num_countries": 11
+  },
+  {
+    "population_category": "Large (100-500M)",
+    "year": 2016,
+    "score": 5.6105,
+    "hdi": 0.7023333333,
+    "num_countries": 12
+  },
+  {
+    "population_category": "Large (100-500M)",
+    "year": 2017,
+    "score": 5.4975,
+    "hdi": 0.7065,
+    "num_countries": 12
+  },
+  {
+    "population_category": "Large (100-500M)",
+    "year": 2018,
+    "score": 5.5025833333,
+    "hdi": 0.7115833333,
+    "num_countries": 12
+  },
+  {
+    "population_category": "Large (100-500M)",
+    "year": 2019,
+    "score": 5.5603333333,
+    "hdi": 0.7163333333,
+    "num_countries": 12
+  },
+  {
+    "population_category": "Large (100-500M)",
+    "year": 2020,
+    "score": 5.5064166667,
+    "hdi": 0.7123333333,
+    "num_countries": 12
+  },
+  {
+    "population_category": "Large (100-500M)",
+    "year": 2021,
+    "score": 5.4596666667,
+    "hdi": 0.7105833333,
+    "num_countries": 12
+  },
+  {
+    "population_category": "Large (100-500M)",
+    "year": 2022,
+    "score": 5.3993333333,
+    "hdi": 0.7175,
+    "num_countries": 12
+  },
+  {
+    "population_category": "Large (100-500M)",
+    "year": 2023,
+    "score": 5.2134285714,
+    "hdi": 0.7181538462,
+    "num_countries": 14
+  },
+  {
+    "population_category": "Large (100-500M)",
+    "year": 2024,
+    "score": 5.2668571429,
+    "hdi": 0.7181538462,
+    "num_countries": 14
+  },
+  {
+    "population_category": "Very Large (>500M)",
+    "year": 2015,
+    "score": 4.794,
+    "hdi": 0.68,
+    "num_countries": 2
+  },
+  {
+    "population_category": "Very Large (>500M)",
+    "year": 2016,
+    "score": 4.8525,
+    "hdi": 0.6895,
+    "num_countries": 2
+  },
+  {
+    "population_category": "Very Large (>500M)",
+    "year": 2017,
+    "score": 4.603,
+    "hdi": 0.6965,
+    "num_countries": 2
+  },
+  {
+    "population_category": "Very Large (>500M)",
+    "year": 2018,
+    "score": 4.718,
+    "hdi": 0.701,
+    "num_countries": 2
+  },
+  {
+    "population_category": "Very Large (>500M)",
+    "year": 2019,
+    "score": 4.8245,
+    "hdi": 0.7065,
+    "num_countries": 2
+  },
+  {
+    "population_category": "Very Large (>500M)",
+    "year": 2020,
+    "score": 4.3485,
+    "hdi": 0.7095,
+    "num_countries": 2
+  },
+  {
+    "population_category": "Very Large (>500M)",
+    "year": 2021,
+    "score": 4.579,
+    "hdi": 0.709,
+    "num_countries": 2
+  },
+  {
+    "population_category": "Very Large (>500M)",
+    "year": 2022,
+    "score": 4.681,
+    "hdi": 0.716,
+    "num_countries": 2
+  },
+  {
+    "population_category": "Very Large (>500M)",
+    "year": 2023,
+    "score": 4.927,
+    "hdi": 0.716,
+    "num_countries": 2
+  },
+  {
+    "population_category": "Very Large (>500M)",
+    "year": 2024,
+    "score": 5.0135,
+    "hdi": 0.716,
+    "num_countries": 2
+  }
+]
