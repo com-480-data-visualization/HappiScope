@@ -1,0 +1,22 @@
+{
+  "United States": {
+    "code": "USA",
+    "hdi_name": "United States",
+    "pop_name": "United States of America"
+  },
+  "United Kingdom": {
+    "code": "GBR",
+    "hdi_name": "United Kingdom",
+    "pop_name": "United Kingdom"
+  },
+  "China": {
+    "code": "CHN",
+    "hdi_name": "China",
+    "pop_name": "China"
+  },
+  "Switzerland": {
+    "code": "CHE",
+    "hdi_name": "Switzerland",
+    "pop_name": "Switzerland"
+  }
+}

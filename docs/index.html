@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HappiScope - Global Happiness Visualization</title>
+    <meta name="description" content="Interactive visualization of global happiness metrics from 2015-2024">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo">
+                    <h1>Happi<span>Scope</span></h1>
+                </div>
+                <div class="nav-links">
+                    <a href="#overview" class="nav-link">Overview</a>
+                    <a href="#global-map" class="nav-link">Global Map</a>
+                    <a href="#time-analysis" class="nav-link">Time Analysis</a>
+                    <a href="#factors" class="nav-link">Happiness Factors</a>
+                    <a href="#correlations" class="nav-link">Correlations</a>
+                    <a href="#about" class="nav-link">About</a>
+                </div>
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+        </nav>
+
+        <div class="hero">
+            <div class="container">
+                <h2>Interactive Visualization of Global Happiness</h2>
+                <p>Explore happiness metrics across countries and time (2015-2024)</p>
+                <a href="#overview" class="btn primary-btn">Start Exploring</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="overview" class="section">
+            <div class="container">
+                <h2>Understanding Global Happiness</h2>
+                <div class="section-description">
+                    <p>The World Happiness Report ranks countries based on citizens' self-reported happiness levels and analyzes various factors contributing to well-being. Explore key insights from a decade of happiness data:</p>
+                </div>
+                
+                <div class="highlights-grid">
+                    <div class="highlight-card">
+                        <div class="highlight-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3>Top Countries</h3>
+                        <p>Nordic countries consistently dominate the top positions, with Finland maintaining the highest happiness ranking since 2018.</p>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Trends</h3>
+                        <p>Most countries show remarkable stability in happiness, with some notable exceptions showing significant improvement or decline.</p>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-icon">
+                            <i class="fas fa-globe-europe"></i>
+                        </div>
+                        <h3>Regional Patterns</h3>
+                        <p>Clear regional clusters emerge with Northern and Western European countries typically ranking higher in happiness.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="global-map" class="section alt-bg">
+            <div class="container">
+                <h2>Global Happiness Map</h2>
+                <div class="section-description">
+                    <p>Explore happiness scores across the world. The map allows you to compare countries and regions, and see how happiness is distributed globally.</p>
+                </div>
+                <div class="map-controls">
+                    <div class="year-selector">
+                        <label for="year-select">Select Year:</label>
+                        <select id="year-select">
+                            <option value="2015">2015</option>
+                            <option value="2016">2016</option>
+                            <option value="2017">2017</option>
+                            <option value="2018">2018</option>
+                            <option value="2019">2019</option>
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                            <option value="2024" selected>2024</option>
+                        </select>
+                    </div>
+                    <div class="metric-selector">
+                        <label for="metric-select">View By:</label>
+                        <select id="metric-select">
+                            <option value="happiness_score" selected>Happiness Score</option>
+                            <option value="gdp_per_capita">GDP per Capita</option>
+                            <option value="social_support">Social Support</option>
+                            <option value="healthy_life_expectancy">Life Expectancy</option>
+                            <option value="freedom">Freedom</option>
+                            <option value="generosity">Generosity</option>
+                            <option value="corruption">Corruption Perception</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="map-container">
+                    <div id="happiness-map" class="visualization"></div>
+                    <div class="map-legend"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="time-analysis" class="section">
+            <div class="container">
+                <h2>Happiness Over Time</h2>
+                <div class="section-description">
+                    <p>Track how happiness has evolved in different countries over the past decade. Compare trajectories and identify significant changes.</p>
+                </div>
+                <div class="countries-selection">
+                    <label for="countries-multi-select">Select Countries to Compare:</label>
+                    <select id="countries-multi-select" multiple>
+                        <!-- Will be populated dynamically from data -->
+                        <option value="Switzerland" selected>Switzerland</option>
+                        <option value="China" selected>China</option>
+                        <option value="United States" selected>United States</option>
+                        <option value="Finland">Finland</option>
+                        <option value="Germany">Germany</option>
+                    </select>
+                    <button id="add-country-btn" class="btn secondary-btn">Apply Selection</button>
+                </div>
+                <div class="chart-container">
+                    <div id="time-series-chart" class="visualization"></div>
+                </div>
+                <div class="insights">
+                    <h3>Key Insights</h3>
+                    <ul id="time-insights">
+                        <li>Switzerland peaked in happiness in 2016 and has gradually declined while maintaining high global standing</li>
+                        <li>China shows steady improvement from 5.2 in 2015 to nearly 6.0 in 2024</li>
+                        <li>The United States displays more variability with a notable drop in 2024</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="factors" class="section alt-bg">
+            <div class="container">
+                <h2>Understanding Happiness Factors</h2>
+                <div class="section-description">
+                    <p>The World Happiness Report analyzes several key factors that contribute to national happiness. Explore how these factors vary across countries and regions.</p>
+                </div>
+                <div class="factor-controls">
+                    <div class="year-selector">
+                        <label for="factor-year-select">Select Year:</label>
+                        <select id="factor-year-select">
+                            <option value="2024" selected>2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                        </select>
+                    </div>
+                    <div class="region-selector">
+                        <label for="region-select">Region Filter:</label>
+                        <select id="region-select">
+                            <option value="all" selected>All Regions</option>
+                            <option value="europe">Europe</option>
+                            <option value="asia">Asia</option>
+                            <option value="africa">Africa</option>
+                            <option value="north_america">North America</option>
+                            <option value="south_america">South America</option>
+                            <option value="oceania">Oceania</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="factors-grid">
+                    <div class="factor-visualization">
+                        <h3>GDP per Capita</h3>
+                        <div id="gdp-factor-chart" class="factor-chart"></div>
+                    </div>
+                    <div class="factor-visualization">
+                        <h3>Social Support</h3>
+                        <div id="social-support-factor-chart" class="factor-chart"></div>
+                    </div>
+                    <div class="factor-visualization">
+                        <h3>Healthy Life Expectancy</h3>
+                        <div id="life-expectancy-factor-chart" class="factor-chart"></div>
+                    </div>
+                    <div class="factor-visualization">
+                        <h3>Freedom to Make Life Choices</h3>
+                        <div id="freedom-factor-chart" class="factor-chart"></div>
+                    </div>
+                    <div class="factor-visualization">
+                        <h3>Generosity</h3>
+                        <div id="generosity-factor-chart" class="factor-chart"></div>
+                    </div>
+                    <div class="factor-visualization">
+                        <h3>Corruption Perception</h3>
+                        <div id="corruption-factor-chart" class="factor-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="correlations" class="section">
+            <div class="container">
+                <h2>Correlations with Other Metrics</h2>
+                <div class="section-description">
+                    <p>Explore relationships between happiness and other important development indicators like Human Development Index (HDI) and population metrics.</p>
+                </div>
+                <div class="correlation-controls">
+                    <div class="correlation-selector">
+                        <label for="correlation-x-select">X-Axis:</label>
+                        <select id="correlation-x-select">
+                            <option value="happiness_score" selected>Happiness Score</option>
+                            <option value="gdp_per_capita">GDP per Capita</option>
+                            <option value="hdi">Human Development Index</option>
+                            <option value="population">Population</option>
+                        </select>
+                    </div>
+                    <div class="correlation-selector">
+                        <label for="correlation-y-select">Y-Axis:</label>
+                        <select id="correlation-y-select">
+                            <option value="happiness_score">Happiness Score</option>
+                            <option value="gdp_per_capita">GDP per Capita</option>
+                            <option value="hdi" selected>Human Development Index</option>
+                            <option value="population">Population</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div id="correlation-chart" class="visualization"></div>
+                </div>
+                <div class="correlation-insights">
+                    <h3>Key Findings</h3>
+                    <p>Countries with high HDI scores generally report higher happiness levels, suggesting the influence of economic development, life expectancy, and education on subjective well-being.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="section alt-bg">
+            <div class="container">
+                <h2>About the Project</h2>
+                <div class="about-content">
+                    <div class="methodology">
+                        <h3>Methodology</h3>
+                        <p>HappiScope visualizes data from the World Happiness Report (2015-2024), which ranks countries based on citizens' self-reported happiness levels. The data is collected through the Gallup World Poll, using nationally representative surveys in approximately 150 countries with samples of about 1,000 individuals per country.</p>
+                        <p>Additional data sources include the Human Development Index (HDI) from the UN Development Programme and population data from the World Population Prospects.</p>
+                    </div>
+                    <div class="data-sources">
+                        <h3>Data Sources</h3>
+                        <ul>
+                            <li><a href="https://worldhappiness.report/" target="_blank">World Happiness Report Official Website</a> - Annual reports from 2012-2024</li>
+                            <li><a href="https://hdr.undp.org/data-center/human-development-index" target="_blank">Human Development Index (HDI)</a> - Health, education, and income metrics</li>
+                            <li><a href="https://population.un.org/wpp/" target="_blank">World Population Prospects (UN)</a> - Demographic data</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="team">
+                    <h3>Project Team</h3>
+                    <div class="team-members">
+                        <div class="team-member">
+                            <h4>Chang Jin</h4>
+                            <p>SCIPER: 403930</p>
+                        </div>
+                        <div class="team-member">
+                            <h4>Rizhong Lin</h4>
+                            <p>SCIPER: 366842</p>
+                        </div>
+                        <div class="team-member">
+                            <h4>Anlan Wang</h4>
+                            <p>SCIPER: 403909</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>HappiScope</h2>
+                    <p>Interactive Visualization of Global Happiness Metrics</p>
+                </div>
+                <div class="footer-links">
+                    <h3>Quick Links</h3>
+                    <a href="#overview">Overview</a>
+                    <a href="#global-map">Global Map</a>
+                    <a href="#time-analysis">Time Analysis</a>
+                    <a href="#factors">Happiness Factors</a>
+                    <a href="#correlations">Correlations</a>
+                    <a href="#about">About</a>
+                </div>
+                <div class="footer-attribution">
+                    <h3>Project Information</h3>
+                    <p>Created for COM-480 Data Visualization course at EPFL</p>
+                    <p>&copy; 2025 Chang Jin, Rizhong Lin, Anlan Wang</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- D3.js for advanced visualizations -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- TopoJSON for map data -->
+    <script src="https://unpkg.com/topojson@3"></script>
+    <!-- Main JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/timeseries.js"></script>
+    <script src="js/factors.js"></script>
+    <script src="js/correlations.js"></script>
+</body>
+</html>
