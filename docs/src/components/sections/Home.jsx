@@ -40,16 +40,16 @@ const Home = () => {
             >
               Exploring the multidimensional nature of global happiness through sophisticated visual analysis
             </motion.p>
-            <motion.div variants={fadeIn}>
+            <motion.div variants={fadeIn} className="space-x-4">
               <Link 
                 to="/map" 
-                className="bg-white text-primary font-medium px-6 py-3 rounded-md shadow-lg hover:bg-gray-100 transition duration-300 mr-4"
+                className="bg-white text-primary font-medium px-6 py-3 rounded-md shadow-lg hover:bg-gray-100 transition duration-300 inline-block"
               >
                 Explore Data
               </Link>
               <Link 
                 to="/about" 
-                className="bg-transparent border-2 border-white text-white font-medium px-6 py-3 rounded-md hover:bg-white hover:text-primary transition duration-300"
+                className="bg-transparent border-2 border-white text-white font-medium px-6 py-3 rounded-md hover:bg-white hover:text-primary transition duration-300 inline-block"
               >
                 Learn More
               </Link>
@@ -59,9 +59,9 @@ const Home = () => {
       </section>
 
       {/* Key Insights Preview */}
-      <section className="section-container py-16">
+      <section className="section-container py-12 md:py-16">
         <h2 className="section-title text-center text-text-color">Key Insights</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mt-8 md:mt-12">
           {/* Insight Card 1 */}
           <motion.div 
             className="card bg-card shadow-md rounded-lg p-6 transition-colors duration-200"
@@ -79,9 +79,9 @@ const Home = () => {
               Discover how global happiness has evolved over the past decade, revealing surprising patterns and shifts.
             </p>
             <div className="text-center">
-              <Link to="/map" className="text-primary hover:underline font-medium inline-flex items-center">
-                View Interactive Map
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <Link to="/map" className="text-primary hover:underline font-medium inline-flex items-center group">
+                <span>View Interactive Map</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1 transform transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </Link>
@@ -105,9 +105,9 @@ const Home = () => {
               Explore which factors contribute most significantly to happiness across different regions and cultures.
             </p>
             <div className="text-center">
-              <Link to="/factors" className="text-primary hover:underline font-medium inline-flex items-center">
-                Analyze Factors
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <Link to="/factors" className="text-primary hover:underline font-medium inline-flex items-center group">
+                <span>Analyze Factors</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1 transform transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </Link>
@@ -131,9 +131,9 @@ const Home = () => {
               Compare happiness metrics between countries and uncover unique patterns across different regions.
             </p>
             <div className="text-center">
-              <Link to="/compare" className="text-primary hover:underline font-medium inline-flex items-center">
-                Compare Countries
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <Link to="/compare" className="text-primary hover:underline font-medium inline-flex items-center group">
+                <span>Compare Countries</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1 transform transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </Link>
@@ -143,38 +143,51 @@ const Home = () => {
       </section>
 
       {/* Featured Visualization */}
-      <section className="bg-gray-100 py-16 transition-colors duration-200">
+      <section className="bg-gray-100 py-12 md:py-16 transition-colors duration-200">
         <div className="section-container">
           <h2 className="section-title text-center text-text-color">Featured Visualization</h2>
-          <div className="bg-card rounded-lg shadow-lg p-6 mt-8 transition-colors duration-200">
-            <div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-md flex items-center justify-center h-80 mb-6">
+          <motion.div 
+            className="bg-card rounded-lg shadow-lg p-6 mt-8 transition-colors duration-200"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-md flex items-center justify-center h-64 md:h-80 mb-6 overflow-hidden shadow-inner">
               <div className="flex flex-col items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-primary opacity-80 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
-                <p className="text-gray-500 text-xl">Interactive Global Happiness Map</p>
+                <p className="text-primary font-medium text-xl">Interactive Global Happiness Map</p>
+                <p className="text-gray-500 text-sm mt-2">Click to explore happiness data across the world</p>
               </div>
             </div>
-            <p className="text-gray-600 mb-4 text-center max-w-3xl mx-auto">
+            <p className="text-gray-600 mb-6 text-center max-w-3xl mx-auto">
               Our interactive visualization shows global happiness scores across different years (2015-2024), 
               allowing you to explore geographic patterns, regional trends, and changes over time.
             </p>
             <div className="flex justify-center">
-              <Link to="/map" className="bg-primary text-white hover:bg-blue-700 px-6 py-3 rounded-md font-medium transition duration-300 inline-flex items-center">
-                Explore Full Map
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <Link to="/map" className="bg-primary text-white hover:bg-blue-700 px-6 py-3 rounded-md font-medium transition duration-300 inline-flex items-center group">
+                <span>Explore Full Map</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 transform transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* About Project Preview */}
-      <section className="section-container py-16">
-        <div className="flex flex-col md:flex-row items-center gap-12">
-          <div className="md:w-1/2">
+      <section className="section-container py-12 md:py-16">
+        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+          <motion.div 
+            className="md:w-1/2"
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
             <h2 className="section-title text-text-color">About HappiScope</h2>
             <p className="text-gray-600 mb-6">
               HappiScope is a data visualization project created for the COM-480 Data Visualization 
@@ -183,22 +196,29 @@ const Home = () => {
             </p>
             <Link 
               to="/about" 
-              className="bg-primary text-white font-medium px-6 py-3 rounded-md hover:bg-primary-dark transition duration-300 inline-flex items-center"
+              className="bg-primary text-white font-medium px-6 py-3 rounded-md hover:bg-primary-dark transition duration-300 inline-flex items-center group"
             >
-              About the Project
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <span>About the Project</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 transform transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </Link>
-          </div>
-          <div className="md:w-1/2 bg-gray-200 rounded-md flex items-center justify-center h-64 transition-colors duration-200">
-            <div className="flex flex-col items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          </motion.div>
+          <motion.div 
+            className="md:w-1/2 bg-gradient-to-br from-gray-100 to-blue-50 rounded-md flex items-center justify-center h-64 transition-colors duration-200 shadow-md mt-6 md:mt-0"
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex flex-col items-center p-6 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-primary mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
-              <p className="text-gray-500">Exploring Global Happiness Data</p>
+              <h3 className="text-gray-800 font-medium text-lg mb-2">Exploring Global Happiness Data</h3>
+              <p className="text-gray-600 text-sm">Discover the insights behind what makes countries and regions happier than others</p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
     </div>
