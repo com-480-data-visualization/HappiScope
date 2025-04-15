@@ -18,7 +18,7 @@ const Home = () => {
   }
 
   return (
-    <div className="bg-background">
+    <div className="bg-background dark:bg-background-dark transition-colors duration-200">
       {/* Hero Section */}
       <section className="py-12 md:py-24 bg-gradient-to-br from-primary to-blue-700 text-white">
         <div className="section-container">
@@ -60,46 +60,46 @@ const Home = () => {
 
       {/* Key Insights Preview */}
       <section className="section-container py-16">
-        <h2 className="section-title text-center">Key Insights</h2>
+        <h2 className="section-title text-center text-text-color dark:text-text-color-dark">Key Insights</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
           {/* Insight Card 1 */}
           <motion.div 
-            className="card"
+            className="card bg-card dark:bg-card-dark shadow-md rounded-lg p-6 transition-colors duration-200"
             whileHover={{ y: -10 }}
           >
-            <h3 className="text-xl font-semibold mb-4">Global Trends</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-xl font-semibold mb-4 text-text-color dark:text-text-color-dark">Global Trends</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               [Placeholder] Discover how global happiness has evolved over the past decade.
             </p>
-            <Link to="/map" className="text-primary hover:underline font-medium">
+            <Link to="/map" className="text-primary dark:text-blue-400 hover:underline font-medium">
               View Interactive Map →
             </Link>
           </motion.div>
 
           {/* Insight Card 2 */}
           <motion.div 
-            className="card"
+            className="card bg-card dark:bg-card-dark shadow-md rounded-lg p-6 transition-colors duration-200"
             whileHover={{ y: -10 }}
           >
-            <h3 className="text-xl font-semibold mb-4">Happiness Factors</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-xl font-semibold mb-4 text-text-color dark:text-text-color-dark">Happiness Factors</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               [Placeholder] Explore which factors contribute most significantly to happiness across regions.
             </p>
-            <Link to="/factors" className="text-primary hover:underline font-medium">
+            <Link to="/factors" className="text-primary dark:text-blue-400 hover:underline font-medium">
               Analyze Factors →
             </Link>
           </motion.div>
 
           {/* Insight Card 3 */}
           <motion.div 
-            className="card"
+            className="card bg-card dark:bg-card-dark shadow-md rounded-lg p-6 transition-colors duration-200"
             whileHover={{ y: -10 }}
           >
-            <h3 className="text-xl font-semibold mb-4">Country Comparisons</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-xl font-semibold mb-4 text-text-color dark:text-text-color-dark">Country Comparisons</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               [Placeholder] Compare happiness metrics between countries and uncover unique patterns.
             </p>
-            <Link to="/compare" className="text-primary hover:underline font-medium">
+            <Link to="/compare" className="text-primary dark:text-blue-400 hover:underline font-medium">
               Compare Countries →
             </Link>
           </motion.div>
@@ -107,17 +107,17 @@ const Home = () => {
       </section>
 
       {/* Featured Visualization */}
-      <section className="bg-gray-100 py-16">
+      <section className="bg-gray-100 dark:bg-gray-700 py-16 transition-colors duration-200">
         <div className="section-container">
-          <h2 className="section-title text-center">Featured Visualization</h2>
-          <div className="bg-white rounded-lg shadow-lg p-6 mt-8">
-            <div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-md flex items-center justify-center h-80 mb-6">
-              <p className="text-gray-500">[Placeholder for World Map Visualization]</p>
+          <h2 className="section-title text-center text-text-color dark:text-text-color-dark">Featured Visualization</h2>
+          <div className="bg-card dark:bg-card-dark rounded-lg shadow-lg p-6 mt-8 transition-colors duration-200">
+            <div className="aspect-w-16 aspect-h-9 bg-gray-200 dark:bg-gray-600 rounded-md flex items-center justify-center h-80 mb-6">
+              <p className="text-gray-500 dark:text-gray-300">[Placeholder for World Map Visualization]</p>
             </div>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               [Placeholder] Interactive visualization showing global happiness scores across different years.
             </p>
-            <Link to="/map" className="text-primary hover:underline font-medium">
+            <Link to="/map" className="text-primary dark:text-blue-400 hover:underline font-medium">
               Explore Full Map →
             </Link>
           </div>
@@ -128,21 +128,21 @@ const Home = () => {
       <section className="section-container py-16">
         <div className="flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2">
-            <h2 className="section-title">About HappiScope</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="section-title text-text-color dark:text-text-color-dark">About HappiScope</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               [Placeholder] HappiScope is a data visualization project created for the COM-480 Data Visualization 
               course at EPFL. It aims to transform complex happiness data from the World Happiness Report 
               and supplementary datasets into intuitive visual insights.
             </p>
             <Link 
               to="/about" 
-              className="bg-primary text-white font-medium px-6 py-3 rounded-md hover:bg-primary-dark transition duration-300"
+              className="bg-primary dark:bg-blue-600 text-white font-medium px-6 py-3 rounded-md hover:bg-primary-dark dark:hover:bg-blue-700 transition duration-300"
             >
               About the Project
             </Link>
           </div>
-          <div className="md:w-1/2 bg-gray-200 rounded-md flex items-center justify-center h-64">
-            <p className="text-gray-500">[Placeholder for Project Image]</p>
+          <div className="md:w-1/2 bg-gray-200 dark:bg-gray-600 rounded-md flex items-center justify-center h-64 transition-colors duration-200">
+            <p className="text-gray-500 dark:text-gray-300">[Placeholder for Project Image]</p>
           </div>
         </div>
       </section>
