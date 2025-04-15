@@ -1,34 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+// Layout Components
+import Header from './components/layout/Header'
+import Footer from './components/layout/Footer'
 
+// Lazy-loaded section components
+const Home = lazy(() => import('./components/sections/Home'))
+const MapVisualization = lazy(() => import('./components/sections/MapVisualization'))
+const FactorAnalysis = lazy(() => import('./components/sections/FactorAnalysis'))
+const CountryComparison = lazy(() => import('./components/sections/CountryComparison'))
+const About = lazy(() => import('./components/sections/About'))
+const Methodology = lazy(() => import('./components/sections/Methodology'))
+
+function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <Router basename='/HappiScope'>
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow">
+          <Suspense fallback={<div className="section-container flex justify-center items-center">Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/map" element={<MapVisualization />} />
+              <Route path="/factors" element={<FactorAnalysis />} />
+              <Route path="/compare" element={<CountryComparison />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/methodology" element={<Methodology />} />
+            </Routes>
+          </Suspense>
+        </main>
+        <Footer />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </Router>
   )
 }
 

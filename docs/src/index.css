@@ -1,3 +1,9 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -11,6 +17,20 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.section-container {
+  @apply mx-auto px-4 py-12 max-w-7xl sm:px-6 lg:px-8;
+}
+
+.section-title {
+  @apply text-3xl font-bold mb-8;
+  /* Removed text-text */
+  color: #1F2937; /* Using the hex value directly instead of text-text */
+}
+
+.card {
+  @apply bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300;
 }
 
 a {
