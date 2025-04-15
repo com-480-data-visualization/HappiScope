@@ -48,8 +48,8 @@ const Header = () => {
                 <motion.img 
                   src={happiscope} 
                   alt="HappiScope Logo" 
-                  className="h-10 w-auto mr-3"
-                  whileHover={{ scale: 1.05, rotate: 5 }}
+                  className="h-15 w-auto mr-3"
+                  whileHover={{ scale: 2, rotate: 5 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 />
                 <span className="relative">
