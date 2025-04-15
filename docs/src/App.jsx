@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense } from 'react'
 import './App.css'
 
 // Layout Components
@@ -15,21 +15,19 @@ const About = lazy(() => import('./components/sections/About'))
 const Methodology = lazy(() => import('./components/sections/Methodology'))
 
 function App() {
-  // Detect system dark mode preference
-  useEffect(() => {
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [])
-
   return (
     <Router basename='/HappiScope'>
       <div className="flex flex-col min-h-screen bg-background dark:bg-background-dark transition-colors duration-200">
         <Header />
         <main className="flex-grow">
-          <Suspense fallback={<div className="section-container flex justify-center items-center text-text-color dark:text-text-color-dark">Loading...</div>}>
+          <Suspense fallback={
+            <div className="section-container flex justify-center items-center py-24">
+              <div className="flex flex-col items-center">
+                <div className="w-16 h-16 border-4 border-primary dark:border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="text-text-color dark:text-text-color-dark">Loading content...</p>
+              </div>
+            </div>
+          }>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/map" element={<MapVisualization />} />

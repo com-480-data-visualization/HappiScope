@@ -74,15 +74,18 @@ const CountryComparison = () => {
           className="mb-8"
         >
           <div className="bg-white shadow-md rounded-lg p-6">
-            <h3 className="text-lg font-medium mb-4">Select Countries to Compare (max 5):</h3>
+            <h3 className="text-lg font-medium mb-4 text-gray-800">Select Countries to Compare (max 5):</h3>
             <div className="flex flex-wrap gap-2 mb-4">
               {selectedCountries.map(country => (
                 <button
                   key={country}
                   onClick={() => handleCountryToggle(country)}
-                  className="px-4 py-2 rounded-md bg-primary text-white flex items-center hover:bg-primary/90 transition duration-200"
+                  className="px-4 py-2 rounded-md bg-primary text-white font-medium flex items-center shadow-md hover:bg-primary/90 transition duration-200"
                 >
-                  {country} <span className="ml-2">×</span>
+                  {country} 
+                  <span className="ml-2 bg-white bg-opacity-20 rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                    ×
+                  </span>
                 </button>
               ))}
               {selectedCountries.length === 0 && (
@@ -94,7 +97,7 @@ const CountryComparison = () => {
               <input
                 type="text"
                 placeholder="Search for a country..."
-                className="w-full p-2 border border-gray-300 rounded-md mb-4"
+                className="w-full p-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -106,7 +109,9 @@ const CountryComparison = () => {
                       <button
                         key={country}
                         onClick={() => handleCountryToggle(country)}
-                        className="px-3 py-2 text-left text-sm rounded-md hover:bg-gray-100 transition duration-200"
+                        className={`px-3 py-2 text-left text-sm rounded-md hover:bg-gray-100 transition duration-200 ${
+                          selectedCountries.length >= 5 ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
                         disabled={selectedCountries.length >= 5}
                       >
                         {country}
@@ -135,9 +140,9 @@ const CountryComparison = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="card mb-8"
+              className="bg-white shadow-md rounded-lg p-6 mb-8"
             >
-              <h3 className="text-xl font-semibold mb-4">Happiness Score Comparison (2015-2024)</h3>
+              <h3 className="text-xl font-semibold mb-4 text-gray-800">Happiness Score Comparison (2015-2024)</h3>
               <div className="bg-gray-100 rounded-md h-80 flex items-center justify-center mb-4 overflow-hidden relative">
                 {isLoading ? (
                   <LoadingPlaceholder />
@@ -198,9 +203,9 @@ const CountryComparison = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="card mb-8"
+              className="bg-white shadow-md rounded-lg p-6 mb-8"
             >
-              <h3 className="text-xl font-semibold mb-4">Factor Breakdown (2024)</h3>
+              <h3 className="text-xl font-semibold mb-4 text-gray-800">Factor Breakdown (2024)</h3>
               <div className="bg-gray-100 rounded-md h-80 flex items-center justify-center mb-4 overflow-hidden relative">
                 {isLoading ? (
                   <LoadingPlaceholder />
@@ -291,9 +296,9 @@ const CountryComparison = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="card"
+              className="bg-white shadow-md rounded-lg p-6"
             >
-              <h3 className="text-xl font-semibold mb-4">Detailed Metrics (2024)</h3>
+              <h3 className="text-xl font-semibold mb-4 text-gray-800">Detailed Metrics (2024)</h3>
               {isLoading ? (
                 <LoadingPlaceholder />
               ) : (
@@ -301,17 +306,17 @@ const CountryComparison = () => {
                   <table className="min-w-full">
                     <thead>
                       <tr className="bg-gray-100">
-                        <th className="p-3 text-left">Metric</th>
+                        <th className="p-3 text-left text-gray-700">Metric</th>
                         {selectedCountries.map(country => (
-                          <th key={country} className="p-3 text-left">{country}</th>
+                          <th key={country} className="p-3 text-left text-gray-700">{country}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
-                        <td className="p-3 border-t font-medium">Happiness Rank</td>
+                        <td className="p-3 border-t font-medium text-gray-800">Happiness Rank</td>
                         {selectedCountries.map((country, index) => (
-                          <td key={country} className="p-3 border-t">
+                          <td key={country} className="p-3 border-t text-gray-600">
                             {country === 'Finland' ? '1' : 
                              country === 'Denmark' ? '2' : 
                              country === 'Switzerland' ? '3' : 
@@ -324,7 +329,7 @@ const CountryComparison = () => {
                         ))}
                       </tr>
                       <tr>
-                        <td className="p-3 border-t font-medium">Happiness Score</td>
+                        <td className="p-3 border-t font-medium text-gray-800">Happiness Score</td>
                         {selectedCountries.map((country, index) => {
                           const baseScore = country === 'Finland' ? 7.8 : 
                                           country === 'Denmark' ? 7.6 : 
@@ -333,14 +338,14 @@ const CountryComparison = () => {
                                           country === 'Japan' ? 6.1 : 
                                           7.0 - (index * 0.2);
                           return (
-                            <td key={country} className="p-3 border-t">
+                            <td key={country} className="p-3 border-t text-gray-600">
                               {baseScore.toFixed(2)}
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="p-3 border-t font-medium">GDP per Capita</td>
+                        <td className="p-3 border-t font-medium text-gray-800">GDP per Capita</td>
                         {selectedCountries.map((country) => {
                           const gdpScore = country === 'Finland' ? 1.45 : 
                                           country === 'Denmark' ? 1.48 : 
@@ -349,14 +354,14 @@ const CountryComparison = () => {
                                           country === 'Japan' ? 1.38 : 
                                           1.30;
                           return (
-                            <td key={country} className="p-3 border-t">
+                            <td key={country} className="p-3 border-t text-gray-600">
                               {gdpScore.toFixed(2)}
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="p-3 border-t font-medium">Social Support</td>
+                        <td className="p-3 border-t font-medium text-gray-800">Social Support</td>
                         {selectedCountries.map((country) => {
                           const score = country === 'Finland' ? 1.58 : 
                                         country === 'Denmark' ? 1.55 : 
@@ -365,14 +370,14 @@ const CountryComparison = () => {
                                         country === 'Japan' ? 1.28 : 
                                         1.30;
                           return (
-                            <td key={country} className="p-3 border-t">
+                            <td key={country} className="p-3 border-t text-gray-600">
                               {score.toFixed(2)}
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="p-3 border-t font-medium">Life Expectancy</td>
+                        <td className="p-3 border-t font-medium text-gray-800">Life Expectancy</td>
                         {selectedCountries.map((country) => {
                           const score = country === 'Finland' ? 0.81 : 
                                         country === 'Denmark' ? 0.83 : 
@@ -381,14 +386,14 @@ const CountryComparison = () => {
                                         country === 'Japan' ? 0.95 : 
                                         0.80;
                           return (
-                            <td key={country} className="p-3 border-t">
+                            <td key={country} className="p-3 border-t text-gray-600">
                               {score.toFixed(2)}
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="p-3 border-t font-medium">Freedom</td>
+                        <td className="p-3 border-t font-medium text-gray-800">Freedom</td>
                         {selectedCountries.map((country) => {
                           const score = country === 'Finland' ? 0.64 : 
                                         country === 'Denmark' ? 0.66 : 
@@ -397,14 +402,14 @@ const CountryComparison = () => {
                                         country === 'Japan' ? 0.45 : 
                                         0.55;
                           return (
-                            <td key={country} className="p-3 border-t">
+                            <td key={country} className="p-3 border-t text-gray-600">
                               {score.toFixed(2)}
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="p-3 border-t font-medium">Generosity</td>
+                        <td className="p-3 border-t font-medium text-gray-800">Generosity</td>
                         {selectedCountries.map((country) => {
                           const score = country === 'Finland' ? 0.18 : 
                                         country === 'Denmark' ? 0.21 : 
@@ -413,14 +418,14 @@ const CountryComparison = () => {
                                         country === 'Japan' ? 0.06 : 
                                         0.15;
                           return (
-                            <td key={country} className="p-3 border-t">
+                            <td key={country} className="p-3 border-t text-gray-600">
                               {score.toFixed(2)}
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="p-3 border-t font-medium">Corruption</td>
+                        <td className="p-3 border-t font-medium text-gray-800">Corruption</td>
                         {selectedCountries.map((country) => {
                           const score = country === 'Finland' ? 0.41 : 
                                         country === 'Denmark' ? 0.43 : 
@@ -429,7 +434,7 @@ const CountryComparison = () => {
                                         country === 'Japan' ? 0.19 : 
                                         0.25;
                           return (
-                            <td key={country} className="p-3 border-t">
+                            <td key={country} className="p-3 border-t text-gray-600">
                               {score.toFixed(2)}
                             </td>
                           );
@@ -450,9 +455,9 @@ const CountryComparison = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="mt-8 card bg-white shadow-md rounded-lg p-6 border-l-4 border-primary"
+              className="mt-8 bg-white shadow-md rounded-lg p-6 border-l-4 border-primary"
             >
-              <h3 className="text-xl font-semibold mb-3">Key Comparison Insights</h3>
+              <h3 className="text-xl font-semibold mb-3 text-gray-800">Key Comparison Insights</h3>
               <ul className="space-y-2 text-gray-600">
                 <li className="flex items-start">
                   <svg className="h-5 w-5 text-primary mr-2 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
