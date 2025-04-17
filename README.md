@@ -34,7 +34,7 @@ Details regarding the project introduction, dataset description, problematic, ex
 
 **(10% of the final grade)**
 
-Details regarding the progress update, core component descriptions, and planned enhancements can be found in the [Milestone 2 README](./Milestone2/README.md). The full report submitted for this milestone is available as [`COM_480_Milestone_2.pdf`](./Milestone2/COM_480_Milestone_2.pdf) in the `Milestone2` folder.
+Details regarding the progress update, core component descriptions, and planned enhancements can be found in the [Milestone 2 README](./Milestone2/README.md). The full report submitted for this milestone is available as [`COM_480_Milestone_2.pdf`](./Milestone2/COM_480_Milestone_2.pdf) in the `Milestone2` folder. Our live website prototype can be found at [https://com-480-data-visualization.github.io/HappiScope/](https://com-480-data-visualization.github.io/HappiScope/)
 
 ### [Milestone 3 (30th May, 5pm)](./Milestone3/README.md)
 
