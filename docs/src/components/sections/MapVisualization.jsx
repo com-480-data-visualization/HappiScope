@@ -1,26 +1,79 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import WorldMap from '../visualizations/WorldMap'
+import CountryDetails from '../visualizations/CountryDetails'
+import happinessData from '../../data/happiness_data.json'
 
 const MapVisualization = () => {
-  const [selectedYear, setSelectedYear] = useState(2024)
-  const [selectedMetric, setSelectedMetric] = useState('Happiness Score')
+  const [selectedYear, setSelectedYear] = useState(2020)
+  const [selectedMetric, setSelectedMetric] = useState('score')
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedCountry, setSelectedCountry] = useState(null)
+  const [timelineAnimating, setTimelineAnimating] = useState(false)
+  const [timelineInterval, setTimelineInterval] = useState(null)
   
   const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
   const metrics = [
-    'Happiness Score', 
-    'GDP per Capita', 
-    'Social Support', 
-    'Life Expectancy', 
-    'Freedom', 
-    'Generosity', 
-    'Corruption'
+    { id: 'score', label: 'Happiness Score' },
+    { id: 'gdp_per_capita', label: 'GDP per Capita' },
+    { id: 'social_support', label: 'Social Support' },
+    { id: 'life_expectancy', label: 'Life Expectancy' },
+    { id: 'freedom', label: 'Freedom' },
+    { id: 'generosity', label: 'Generosity' },
+    { id: 'corruption', label: 'Corruption' }
   ]
   
-  // Simulate loading time for placeholders
-  setTimeout(() => {
-    setIsLoading(false)
-  }, 1500)
+  // Simulate loading time
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 500)
+    
+    // Cleanup any timeline animation on unmount
+    return () => {
+      if (timelineInterval) {
+        clearInterval(timelineInterval)
+      }
+    }
+  }, [])
+  
+  // Update selected country when year changes
+  useEffect(() => {
+    if (selectedCountry) {
+      const updatedCountry = happinessData.find(d => 
+        d.country_code === selectedCountry.country_code && d.year === selectedYear
+      )
+      setSelectedCountry(updatedCountry || null)
+    }
+  }, [selectedYear])
+  
+  // Handle timeline animation
+  const toggleTimelineAnimation = () => {
+    if (timelineAnimating) {
+      // Stop animation
+      if (timelineInterval) {
+        clearInterval(timelineInterval)
+        setTimelineInterval(null)
+      }
+      setTimelineAnimating(false)
+    } else {
+      // Start animation
+      const interval = setInterval(() => {
+        setSelectedYear(prevYear => {
+          const yearIndex = years.indexOf(prevYear)
+          // If we reached the end of the timeline, go back to the beginning
+          if (yearIndex >= years.length - 1) {
+            return years[0]
+          }
+          // Otherwise, move to the next year
+          return years[yearIndex + 1]
+        })
+      }, 2000) // Change every 2 seconds
+      
+      setTimelineInterval(interval)
+      setTimelineAnimating(true)
+    }
+  }
   
   return (
     <div className="bg-background min-h-screen">
@@ -36,29 +89,65 @@ const MapVisualization = () => {
           </p>
         </motion.div>
         
-        {/* Year Selector */}
+        {/* Controls Section - Time and Metric Selectors */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="mb-8 flex justify-center"
+          className="mb-8"
         >
-          <div className="bg-white shadow-md rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-3 text-gray-800">Select Year:</h3>
-            <div className="flex flex-wrap gap-2">
-              {years.map(year => (
-                <button
-                  key={year}
-                  onClick={() => setSelectedYear(year)}
-                  className={`px-4 py-2 rounded-md font-medium transition-all duration-200 ${
-                    selectedYear === year 
-                      ? 'bg-primary text-white shadow-md ring-2 ring-primary/20' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Year Selector */}
+            <div className="bg-white shadow-md rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-medium text-gray-800">Select Year:</h3>
+                <button 
+                  onClick={toggleTimelineAnimation}
+                  className={`px-3 py-1 rounded-full text-sm transition-all ${
+                    timelineAnimating 
+                      ? 'bg-red-100 text-red-700 hover:bg-red-200' 
+                      : 'bg-primary/10 text-primary hover:bg-primary/20'
                   }`}
                 >
-                  {year}
+                  {timelineAnimating ? 'Stop Animation' : 'Play Timeline'}
                 </button>
-              ))}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {years.map(year => (
+                  <button
+                    key={year}
+                    onClick={() => setSelectedYear(year)}
+                    className={`px-4 py-2 rounded-md font-medium transition-all duration-200 ${
+                      selectedYear === year 
+                        ? 'bg-primary text-white shadow-md ring-2 ring-primary/20' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    disabled={timelineAnimating}
+                  >
+                    {year}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Metric Selector */}
+            <div className="bg-white shadow-md rounded-lg p-4">
+              <h3 className="text-lg font-medium mb-3 text-gray-800">Select Metric:</h3>
+              <div className="flex flex-wrap gap-2">
+                {metrics.map(metric => (
+                  <button
+                    key={metric.id}
+                    onClick={() => setSelectedMetric(metric.id)}
+                    className={`px-4 py-2 rounded-md font-medium transition-all duration-200 ${
+                      selectedMetric === metric.id 
+                        ? 'bg-primary text-white shadow-md ring-2 ring-primary/20' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {metric.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </motion.div>
@@ -77,17 +166,12 @@ const MapVisualization = () => {
                 <p className="text-gray-500">Loading visualization...</p>
               </div>
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center">
-                <p className="text-gray-500 text-xl mb-4">[Placeholder for World Map Visualization]</p>
-                <div className="w-3/4 max-w-lg space-y-3">
-                  <div className="h-2 bg-primary/10 rounded flex items-center">
-                    <div className="h-full bg-primary rounded w-2/3 animate-pulse"></div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">Lower {selectedMetric}</span>
-                    <span className="text-xs text-gray-500">Higher {selectedMetric}</span>
-                  </div>
-                </div>
+              <div className="w-full h-full">
+                <WorldMap 
+                  year={selectedYear} 
+                  metric={selectedMetric} 
+                  setSelectedCountry={setSelectedCountry} 
+                />
               </div>
             )}
             <div className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm px-3 py-1 rounded text-sm text-gray-800">
@@ -98,25 +182,13 @@ const MapVisualization = () => {
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div>
               <p className="text-gray-600">
-                Displaying happiness data for year: <span className="font-semibold">{selectedYear}</span>
+                Displaying {metrics.find(m => m.id === selectedMetric)?.label} data for year: <span className="font-semibold">{selectedYear}</span>
               </p>
-            </div>
-            
-            <div>
-              <select 
-                className="bg-gray-100 rounded-md px-4 py-2 border border-gray-300 text-gray-800"
-                value={selectedMetric}
-                onChange={(e) => setSelectedMetric(e.target.value)}
-              >
-                {metrics.map(metric => (
-                  <option key={metric} value={metric}>{metric}</option>
-                ))}
-              </select>
             </div>
           </div>
         </motion.div>
         
-        {/* Legend and Info */}
+        {/* Details and Legend Section */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -125,31 +197,34 @@ const MapVisualization = () => {
             className="bg-white shadow-md rounded-lg p-6"
           >
             <h3 className="text-xl font-semibold mb-4 text-gray-800">Color Legend</h3>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <div className="flex items-center">
-                <div className="w-8 h-4 bg-green-600 rounded-sm mr-2"></div>
+                <div className="w-8 h-4 bg-[#313695] rounded-sm mr-2"></div>
                 <span className="text-gray-700">Very Happy (8-10)</span>
               </div>
               <div className="flex items-center">
-                <div className="w-8 h-4 bg-green-400 rounded-sm mr-2"></div>
+                <div className="w-8 h-4 bg-[#4575b4] rounded-sm mr-2"></div>
                 <span className="text-gray-700">Happy (7-8)</span>
               </div>
               <div className="flex items-center">
-                <div className="w-8 h-4 bg-yellow-400 rounded-sm mr-2"></div>
+                <div className="w-8 h-4 bg-[#91bfdb] rounded-sm mr-2"></div>
                 <span className="text-gray-700">Moderately Happy (6-7)</span>
               </div>
               <div className="flex items-center">
-                <div className="w-8 h-4 bg-orange-400 rounded-sm mr-2"></div>
+                <div className="w-8 h-4 bg-[#fee090] rounded-sm mr-2"></div>
                 <span className="text-gray-700">Less Happy (5-6)</span>
               </div>
               <div className="flex items-center">
-                <div className="w-8 h-4 bg-red-400 rounded-sm mr-2"></div>
+                <div className="w-8 h-4 bg-[#fc8d59] rounded-sm mr-2"></div>
                 <span className="text-gray-700">Unhappy (4-5)</span>
               </div>
               <div className="flex items-center">
-                <div className="w-8 h-4 bg-red-600 rounded-sm mr-2"></div>
+                <div className="w-8 h-4 bg-[#d73027] rounded-sm mr-2"></div>
                 <span className="text-gray-700">Very Unhappy (&lt; 4)</span>
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Colors indicate happiness levels from lowest (red) to highest (deep blue).
+              </p>
             </div>
           </motion.div>
           
@@ -157,45 +232,11 @@ const MapVisualization = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="bg-white shadow-md rounded-lg p-6"
+            className="bg-white shadow-md rounded-lg p-6 md:col-span-2"
           >
-            <h3 className="text-xl font-semibold mb-4 text-gray-800">Selected Region Insights</h3>
-            <p className="text-gray-600 mb-4">
-              Click on a country or region to see detailed information and insights about happiness factors.
-            </p>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-500 italic">No country selected. Click on the map to view country details.</p>
-              <div className="mt-3 space-y-2">
-                <div className="h-2 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-2 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-2 bg-gray-200 rounded w-5/6"></div>
-              </div>
-            </div>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="bg-white shadow-md rounded-lg p-6"
-          >
-            <h3 className="text-xl font-semibold mb-4 text-gray-800">Data Completeness</h3>
-            <p className="text-gray-600 mb-4">
-              Information about the completeness and quality of data for the selected year.
-            </p>
-            <div className="mb-3">
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div className="bg-primary h-2.5 rounded-full" style={{ width: '85%' }}></div>
-              </div>
-              <p className="text-sm text-gray-500 mt-2">85% of countries have complete data for {selectedYear}</p>
-            </div>
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <h4 className="font-medium text-sm mb-2 text-gray-800">Top 3 Missing Data Regions</h4>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Sub-Saharan Africa (8 countries)</li>
-                <li>• Southeast Asia (3 countries)</li>
-                <li>• Caribbean (2 countries)</li>
-              </ul>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Country Details</h3>
+            <div className="h-[400px]">
+              <CountryDetails country={selectedCountry} metric={selectedMetric} />
             </div>
           </motion.div>
         </div>

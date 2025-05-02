@@ -1,27 +1,116 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { 
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
+} from 'recharts'
+import happinessData from '../../data/happiness_data.json'
 
 const CountryComparison = () => {
-  const [selectedCountries, setSelectedCountries] = useState(['Finland', 'Denmark', 'United States', 'Japan'])
+  const [selectedCountries, setSelectedCountries] = useState(['Finland', 'Denmark', 'United States of America', 'Switzerland'])
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   
-  // This would be replaced with actual data in the final implementation
-  const availableCountries = [
-    'Finland', 'Denmark', 'Switzerland', 'Iceland', 'Netherlands', 
-    'Norway', 'Sweden', 'Luxembourg', 'New Zealand', 'Austria',
-    'Australia', 'Israel', 'Germany', 'Canada', 'Ireland',
-    'United States', 'United Kingdom', 'Czechia', 'Belgium', 'France',
-    'Japan', 'Spain', 'Italy', 'Brazil', 'Mexico',
-    'South Africa', 'China', 'India', 'Russia'
+  // Generate a list of all available countries from the data
+  const availableCountries = useMemo(() => {
+    const uniqueCountries = [...new Set(happinessData.map(d => d.country))].sort()
+    return uniqueCountries
+  }, [])
+
+  // Create colors for each country
+  const countryColors = [
+    '#4F46E5', // indigo
+    '#10B981', // emerald
+    '#F59E0B', // amber
+    '#EF4444', // red
+    '#8B5CF6'  // purple
   ]
   
-  // Simulate loading delay for placeholders
+  // Prepare time series data for the selected countries
+  const timeSeriesData = useMemo(() => {
+    if (selectedCountries.length === 0) return []
+    
+    // Get all years
+    const years = [...new Set(happinessData.map(d => d.year))].sort()
+    
+    return years.map(year => {
+      const dataForYear = { year }
+      
+      selectedCountries.forEach(country => {
+        const countryData = happinessData.find(d => d.country === country && d.year === year)
+        dataForYear[country] = countryData?.score || null
+      })
+      
+      return dataForYear
+    })
+  }, [selectedCountries])
+  
+  // Prepare radar chart data for selected countries
+  const radarData = useMemo(() => {
+    if (selectedCountries.length === 0) return []
+    
+    const latestYear = Math.max(...happinessData.map(d => d.year))
+    
+    // Define the factors to include in the radar chart
+    const factors = [
+      { key: 'gdp_per_capita', name: 'GDP' },
+      { key: 'social_support', name: 'Social Support' },
+      { key: 'life_expectancy', name: 'Health' },
+      { key: 'freedom', name: 'Freedom' },
+      { key: 'generosity', name: 'Generosity' },
+      { key: 'corruption', name: 'Trust' }
+    ]
+    
+    // For each factor, create a data point with values for each country
+    return factors.map(factor => {
+      const dataPoint = { factor: factor.name }
+      
+      selectedCountries.forEach(country => {
+        const countryData = happinessData.find(d => 
+          d.country === country && d.year === latestYear
+        )
+        // Scale all values to 0-100 range for better radar visualization
+        // Most happiness factors are in 0-2 range in the data
+        dataPoint[country] = countryData?.[factor.key] 
+          ? Math.min(100, countryData[factor.key] * 50)
+          : 0
+      })
+      
+      return dataPoint
+    })
+  }, [selectedCountries])
+  
+  // Prepare table data for selected countries
+  const tableData = useMemo(() => {
+    if (selectedCountries.length === 0) return []
+    
+    const latestYear = Math.max(...happinessData.map(d => d.year))
+    
+    return selectedCountries.map(country => {
+      const countryData = happinessData.find(d => 
+        d.country === country && d.year === latestYear
+      ) || {}
+      
+      return {
+        country,
+        score: countryData.score,
+        gdp_per_capita: countryData.gdp_per_capita,
+        social_support: countryData.social_support,
+        life_expectancy: countryData.life_expectancy,
+        freedom: countryData.freedom,
+        generosity: countryData.generosity,
+        corruption: countryData.corruption,
+        rank: countryData.rank || '-'
+      }
+    })
+  }, [selectedCountries])
+  
+  // Simulate loading delay for data preparation
   useEffect(() => {
     setIsLoading(true)
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 1000)
+    }, 500)
     
     return () => clearTimeout(timer)
   }, [selectedCountries])
@@ -44,6 +133,23 @@ const CountryComparison = () => {
       <p className="text-gray-500 text-sm">Loading comparison data...</p>
     </div>
   )
+
+  // Custom tooltip for the line chart
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 border border-gray-200 shadow-md rounded-md">
+          <p className="font-medium text-gray-800">{`Year: ${label}`}</p>
+          {payload.map((entry, index) => (
+            <p key={index} style={{ color: entry.color }} className="text-sm">
+              {`${entry.name}: ${entry.value?.toFixed(2) || 'No data'}`}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
   
   return (
     <div className="bg-background min-h-screen">
@@ -76,11 +182,12 @@ const CountryComparison = () => {
           <div className="bg-white shadow-md rounded-lg p-6">
             <h3 className="text-lg font-medium mb-4 text-gray-800">Select Countries to Compare (max 5):</h3>
             <div className="flex flex-wrap gap-2 mb-4">
-              {selectedCountries.map(country => (
+              {selectedCountries.map((country, index) => (
                 <button
                   key={country}
                   onClick={() => handleCountryToggle(country)}
-                  className="px-4 py-2 rounded-md bg-primary text-white font-medium flex items-center shadow-md hover:bg-primary/90 transition duration-200"
+                  className="px-4 py-2 rounded-md text-white font-medium flex items-center shadow-md hover:opacity-90 transition duration-200"
+                  style={{ backgroundColor: countryColors[index % countryColors.length] }}
                 >
                   {country} 
                   <span className="ml-2 bg-white bg-opacity-20 rounded-full w-5 h-5 flex items-center justify-center text-xs">
@@ -143,52 +250,49 @@ const CountryComparison = () => {
               className="bg-white shadow-md rounded-lg p-6 mb-8"
             >
               <h3 className="text-xl font-semibold mb-4 text-gray-800">Happiness Score Comparison (2015-2024)</h3>
-              <div className="bg-gray-100 rounded-md h-80 flex items-center justify-center mb-4 overflow-hidden relative">
+              <div className="bg-gray-50 rounded-md h-80 flex items-center justify-center mb-4 overflow-hidden relative">
                 {isLoading ? (
                   <LoadingPlaceholder />
                 ) : (
-                  <div className="w-full h-full p-6">
-                    <div className="text-gray-500 text-center mb-4">
-                      [Placeholder for Line Chart: Happiness Score Trends]
-                    </div>
-                    <div className="h-56 bg-white rounded-md shadow-inner p-4 relative">
-                      <div className="absolute left-0 bottom-8 w-full h-px bg-gray-300"></div>
-                      <div className="absolute left-10 top-0 w-px h-full bg-gray-300"></div>
-                      
-                      {/* Y-axis label */}
-                      <div className="absolute -left-6 top-1/2 -translate-y-1/2 transform -rotate-90 text-xs text-gray-500">
-                        Happiness Score
-                      </div>
-                      
-                      {/* X-axis label */}
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-gray-500">
-                        Year
-                      </div>
-                      
-                      {/* Sample trend lines */}
-                      <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="M10,50 Q30,30 50,40 T90,20" fill="none" stroke="#4F46E5" strokeWidth="2" />
-                        <path d="M10,60 Q30,70 50,65 T90,50" fill="none" stroke="#10B981" strokeWidth="2" />
-                        <path d="M10,70 Q30,65 50,60 T90,40" fill="none" stroke="#F59E0B" strokeWidth="2" />
-                        <path d="M10,40 Q30,50 50,45 T90,60" fill="none" stroke="#EF4444" strokeWidth="2" />
-                      </svg>
-                      
-                      {/* Legend */}
-                      <div className="absolute top-2 right-2 bg-white/80 p-2 rounded text-xs space-y-1">
-                        {selectedCountries.slice(0, 4).map((country, index) => (
-                          <div key={country} className="flex items-center">
-                            <div className={`w-3 h-2 mr-1 ${
-                              index === 0 ? 'bg-indigo-600' : 
-                              index === 1 ? 'bg-green-600' : 
-                              index === 2 ? 'bg-yellow-500' : 
-                              'bg-red-600'
-                            }`}></div>
-                            <span>{country}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={timeSeriesData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                      <XAxis 
+                        dataKey="year" 
+                        label={{ 
+                          value: 'Year', 
+                          position: 'insideBottomRight', 
+                          offset: -10 
+                        }} 
+                      />
+                      <YAxis 
+                        domain={[3, 8]} 
+                        label={{ 
+                          value: 'Happiness Score', 
+                          angle: -90, 
+                          position: 'insideLeft',
+                          style: { textAnchor: 'middle' }
+                        }}
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend />
+                      {selectedCountries.map((country, index) => (
+                        <Line
+                          key={country}
+                          type="monotone"
+                          dataKey={country}
+                          stroke={countryColors[index % countryColors.length]}
+                          strokeWidth={2}
+                          dot={{ r: 4 }}
+                          activeDot={{ r: 6 }}
+                          connectNulls
+                        />
+                      ))}
+                    </LineChart>
+                  </ResponsiveContainer>
                 )}
               </div>
               <p className="text-gray-600 text-sm">
@@ -206,82 +310,29 @@ const CountryComparison = () => {
               className="bg-white shadow-md rounded-lg p-6 mb-8"
             >
               <h3 className="text-xl font-semibold mb-4 text-gray-800">Factor Breakdown (2024)</h3>
-              <div className="bg-gray-100 rounded-md h-80 flex items-center justify-center mb-4 overflow-hidden relative">
+              <div className="bg-gray-50 rounded-md h-80 flex items-center justify-center mb-4 overflow-hidden relative">
                 {isLoading ? (
                   <LoadingPlaceholder />
                 ) : (
-                  <div className="w-full h-full p-6">
-                    <div className="text-gray-500 text-center mb-4">
-                      [Placeholder for Radar Chart: Factor Comparison]
-                    </div>
-                    <div className="h-56 bg-white rounded-md shadow-inner p-4 relative flex items-center justify-center">
-                      {/* Simple radar chart placeholder */}
-                      <div className="relative w-48 h-48">
-                        {/* Circular guides */}
-                        <div className="absolute inset-0 rounded-full border border-gray-200"></div>
-                        <div className="absolute top-1/4 left-1/4 right-1/4 bottom-1/4 rounded-full border border-gray-200"></div>
-                        <div className="absolute top-[37.5%] left-[37.5%] right-[37.5%] bottom-[37.5%] rounded-full border border-gray-200"></div>
-                        
-                        {/* Factor axes */}
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-gray-300"></div>
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-px bg-gray-300"></div>
-                        <div className="absolute top-1/4 left-1/4 w-[70.7%] h-px bg-gray-300 origin-left rotate-45"></div>
-                        <div className="absolute top-1/4 right-1/4 w-[70.7%] h-px bg-gray-300 origin-right -rotate-45"></div>
-                        
-                        {/* Factor labels */}
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 text-[9px] text-gray-500">GDP</div>
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-2 text-[9px] text-gray-500">Social</div>
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 text-[9px] text-gray-500">Health</div>
-                        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 text-[9px] text-gray-500">Freedom</div>
-                        <div className="absolute top-[15%] left-[15%] text-[9px] text-gray-500">Trust</div>
-                        <div className="absolute top-[15%] right-[15%] text-[9px] text-gray-500">Generosity</div>
-                        
-                        {/* Sample country data */}
-                        {selectedCountries.slice(0, 4).map((country, index) => {
-                          const color = index === 0 ? '#4F46E5' : 
-                                        index === 1 ? '#10B981' : 
-                                        index === 2 ? '#F59E0B' : 
-                                        '#EF4444';
-                          
-                          // Create random polygon points for placeholder
-                          const points = [
-                            `${50},${10 + index * 5}`,  // GDP
-                            `${85 - index * 8},${50}`,  // Freedom
-                            `${50},${90 - index * 3}`,  // Social
-                            `${15 + index * 6},${50}`,  // Health
-                            `${25 + index * 3},${25 + index * 3}`,  // Trust
-                            `${75 - index * 3},${25 + index * 3}`   // Generosity
-                          ].join(' ');
-                          
-                          return (
-                            <svg key={country} className="absolute inset-0" viewBox="0 0 100 100">
-                              <polygon 
-                                points={points} 
-                                fill={`${color}20`} 
-                                stroke={color} 
-                                strokeWidth="1.5"
-                              />
-                            </svg>
-                          );
-                        })}
-                      </div>
-                      
-                      {/* Legend */}
-                      <div className="absolute top-2 right-2 bg-white/80 p-2 rounded text-xs space-y-1">
-                        {selectedCountries.slice(0, 4).map((country, index) => (
-                          <div key={country} className="flex items-center">
-                            <div className={`w-3 h-2 mr-1 ${
-                              index === 0 ? 'bg-indigo-600' : 
-                              index === 1 ? 'bg-green-600' : 
-                              index === 2 ? 'bg-yellow-500' : 
-                              'bg-red-600'
-                            }`}></div>
-                            <span>{country}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart outerRadius="70%" data={radarData}>
+                      <PolarGrid />
+                      <PolarAngleAxis dataKey="factor" />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                      {selectedCountries.map((country, index) => (
+                        <Radar
+                          key={country}
+                          name={country}
+                          dataKey={country}
+                          stroke={countryColors[index % countryColors.length]}
+                          fill={countryColors[index % countryColors.length]}
+                          fillOpacity={0.2}
+                        />
+                      ))}
+                      <Legend />
+                      <Tooltip />
+                    </RadarChart>
+                  </ResponsiveContainer>
                 )}
               </div>
               <p className="text-gray-600 text-sm">
@@ -307,138 +358,71 @@ const CountryComparison = () => {
                     <thead>
                       <tr className="bg-gray-100">
                         <th className="p-3 text-left text-gray-700">Metric</th>
-                        {selectedCountries.map(country => (
-                          <th key={country} className="p-3 text-left text-gray-700">{country}</th>
+                        {selectedCountries.map((country, index) => (
+                          <th key={country} className="p-3 text-left text-gray-700">
+                            <span className="inline-block w-2 h-2 rounded-full mr-2" 
+                                  style={{backgroundColor: countryColors[index % countryColors.length]}}></span>
+                            {country}
+                          </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
-                        <td className="p-3 border-t font-medium text-gray-800">Happiness Rank</td>
-                        {selectedCountries.map((country, index) => (
-                          <td key={country} className="p-3 border-t text-gray-600">
-                            {country === 'Finland' ? '1' : 
-                             country === 'Denmark' ? '2' : 
-                             country === 'Switzerland' ? '3' : 
-                             country === 'Iceland' ? '4' : 
-                             country === 'Netherlands' ? '5' : 
-                             country === 'United States' ? '15' : 
-                             country === 'Japan' ? '47' : 
-                             `${index + 6}`}
+                        <td className="p-3 border-t font-medium text-gray-800">Happiness Score</td>
+                        {tableData.map((country) => (
+                          <td key={country.country} className="p-3 border-t text-gray-600">
+                            {country.score?.toFixed(2) || 'N/A'}
                           </td>
                         ))}
                       </tr>
                       <tr>
-                        <td className="p-3 border-t font-medium text-gray-800">Happiness Score</td>
-                        {selectedCountries.map((country, index) => {
-                          const baseScore = country === 'Finland' ? 7.8 : 
-                                          country === 'Denmark' ? 7.6 : 
-                                          country === 'Switzerland' ? 7.5 : 
-                                          country === 'United States' ? 6.9 : 
-                                          country === 'Japan' ? 6.1 : 
-                                          7.0 - (index * 0.2);
-                          return (
-                            <td key={country} className="p-3 border-t text-gray-600">
-                              {baseScore.toFixed(2)}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                      <tr>
                         <td className="p-3 border-t font-medium text-gray-800">GDP per Capita</td>
-                        {selectedCountries.map((country) => {
-                          const gdpScore = country === 'Finland' ? 1.45 : 
-                                          country === 'Denmark' ? 1.48 : 
-                                          country === 'Switzerland' ? 1.52 : 
-                                          country === 'United States' ? 1.53 : 
-                                          country === 'Japan' ? 1.38 : 
-                                          1.30;
-                          return (
-                            <td key={country} className="p-3 border-t text-gray-600">
-                              {gdpScore.toFixed(2)}
-                            </td>
-                          );
-                        })}
+                        {tableData.map((country) => (
+                          <td key={country.country} className="p-3 border-t text-gray-600">
+                            {country.gdp_per_capita?.toFixed(2) || 'N/A'}
+                          </td>
+                        ))}
                       </tr>
                       <tr>
                         <td className="p-3 border-t font-medium text-gray-800">Social Support</td>
-                        {selectedCountries.map((country) => {
-                          const score = country === 'Finland' ? 1.58 : 
-                                        country === 'Denmark' ? 1.55 : 
-                                        country === 'Switzerland' ? 1.52 : 
-                                        country === 'United States' ? 1.38 : 
-                                        country === 'Japan' ? 1.28 : 
-                                        1.30;
-                          return (
-                            <td key={country} className="p-3 border-t text-gray-600">
-                              {score.toFixed(2)}
-                            </td>
-                          );
-                        })}
+                        {tableData.map((country) => (
+                          <td key={country.country} className="p-3 border-t text-gray-600">
+                            {country.social_support?.toFixed(2) || 'N/A'}
+                          </td>
+                        ))}
                       </tr>
                       <tr>
                         <td className="p-3 border-t font-medium text-gray-800">Life Expectancy</td>
-                        {selectedCountries.map((country) => {
-                          const score = country === 'Finland' ? 0.81 : 
-                                        country === 'Denmark' ? 0.83 : 
-                                        country === 'Switzerland' ? 0.92 : 
-                                        country === 'United States' ? 0.73 : 
-                                        country === 'Japan' ? 0.95 : 
-                                        0.80;
-                          return (
-                            <td key={country} className="p-3 border-t text-gray-600">
-                              {score.toFixed(2)}
-                            </td>
-                          );
-                        })}
+                        {tableData.map((country) => (
+                          <td key={country.country} className="p-3 border-t text-gray-600">
+                            {country.life_expectancy?.toFixed(2) || 'N/A'}
+                          </td>
+                        ))}
                       </tr>
                       <tr>
                         <td className="p-3 border-t font-medium text-gray-800">Freedom</td>
-                        {selectedCountries.map((country) => {
-                          const score = country === 'Finland' ? 0.64 : 
-                                        country === 'Denmark' ? 0.66 : 
-                                        country === 'Switzerland' ? 0.63 : 
-                                        country === 'United States' ? 0.51 : 
-                                        country === 'Japan' ? 0.45 : 
-                                        0.55;
-                          return (
-                            <td key={country} className="p-3 border-t text-gray-600">
-                              {score.toFixed(2)}
-                            </td>
-                          );
-                        })}
+                        {tableData.map((country) => (
+                          <td key={country.country} className="p-3 border-t text-gray-600">
+                            {country.freedom?.toFixed(2) || 'N/A'}
+                          </td>
+                        ))}
                       </tr>
                       <tr>
                         <td className="p-3 border-t font-medium text-gray-800">Generosity</td>
-                        {selectedCountries.map((country) => {
-                          const score = country === 'Finland' ? 0.18 : 
-                                        country === 'Denmark' ? 0.21 : 
-                                        country === 'Switzerland' ? 0.26 : 
-                                        country === 'United States' ? 0.28 : 
-                                        country === 'Japan' ? 0.06 : 
-                                        0.15;
-                          return (
-                            <td key={country} className="p-3 border-t text-gray-600">
-                              {score.toFixed(2)}
-                            </td>
-                          );
-                        })}
+                        {tableData.map((country) => (
+                          <td key={country.country} className="p-3 border-t text-gray-600">
+                            {country.generosity?.toFixed(2) || 'N/A'}
+                          </td>
+                        ))}
                       </tr>
                       <tr>
-                        <td className="p-3 border-t font-medium text-gray-800">Corruption</td>
-                        {selectedCountries.map((country) => {
-                          const score = country === 'Finland' ? 0.41 : 
-                                        country === 'Denmark' ? 0.43 : 
-                                        country === 'Switzerland' ? 0.39 : 
-                                        country === 'United States' ? 0.15 : 
-                                        country === 'Japan' ? 0.19 : 
-                                        0.25;
-                          return (
-                            <td key={country} className="p-3 border-t text-gray-600">
-                              {score.toFixed(2)}
-                            </td>
-                          );
-                        })}
+                        <td className="p-3 border-t font-medium text-gray-800">Trust (Low Corruption)</td>
+                        {tableData.map((country) => (
+                          <td key={country.country} className="p-3 border-t text-gray-600">
+                            {country.corruption?.toFixed(2) || 'N/A'}
+                          </td>
+                        ))}
                       </tr>
                     </tbody>
                   </table>
