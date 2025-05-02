@@ -228,7 +228,7 @@
     "continent": "Africa",
     "country_code": "COD",
     "score": 3.295,
-    "hdi": NaN
+    "hdi": null
   },
   {
     "country": "Denmark",
@@ -438,7 +438,7 @@
     "continent": "Africa",
     "country_code": "CIV",
     "score": 5.08,
-    "hdi": NaN
+    "hdi": null
   },
   {
     "country": "Jamaica",
@@ -480,7 +480,7 @@
     "continent": "Europe",
     "country_code": "XKX",
     "score": 6.561,
-    "hdi": NaN
+    "hdi": null
   },
   {
     "country": "Kuwait",
@@ -715,10 +715,10 @@
   },
   {
     "country": "Northern Cyprus",
-    "continent": NaN,
+    "continent": null,
     "country_code": "CYN",
     "score": 5.467,
-    "hdi": NaN
+    "hdi": null
   },
   {
     "country": "Norway",
@@ -816,7 +816,7 @@
     "continent": "Asia",
     "country_code": "SAU",
     "score": 6.594,
-    "hdi": NaN
+    "hdi": null
   },
   {
     "country": "Senegal",
@@ -907,7 +907,7 @@
     "continent": "Asia",
     "country_code": "TWN",
     "score": 6.503,
-    "hdi": NaN
+    "hdi": null
   },
   {
     "country": "Tajikistan",
@@ -984,7 +984,7 @@
     "continent": "Asia",
     "country_code": "ARE",
     "score": 6.733,
-    "hdi": NaN
+    "hdi": null
   },
   {
     "country": "United Kingdom",

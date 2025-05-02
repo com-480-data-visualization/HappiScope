@@ -40,8 +40,10 @@ const createLookupTables = () => {
 
   // First, populate with country data from countries.json
   countriesData.forEach(country => {
-    nameToCodeMap.set(country.country.toLowerCase(), country.country_code);
-    codeToNameMap.set(country.country_code, country.country);
+    if (country.country && country.country_code) {
+      nameToCodeMap.set(country.country.toLowerCase(), country.country_code);
+      codeToNameMap.set(country.country_code, country.country);
+    }
   });
 
   // Add aliases
@@ -64,12 +66,20 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
   const [showTooltip, setShowTooltip] = useState(false);
   const [position, setPosition] = useState({ coordinates: [0, 20], zoom: 1 });
   const [mapReady, setMapReady] = useState(false);
+  const [error, setError] = useState(null);
 
   // Filter data for the selected year
   useEffect(() => {
-    const filteredData = happinessData.filter(d => d.year === year);
-    setData(filteredData);
-    setMapReady(true);
+    try {
+      console.log("Filtering data for year:", year);
+      const filteredData = happinessData.filter(d => d.year === year);
+      console.log(`Found ${filteredData.length} data points for year ${year}`);
+      setData(filteredData);
+      setMapReady(true);
+    } catch (err) {
+      console.error("Error filtering data:", err);
+      setError(err.message);
+    }
   }, [year]);
 
   // Setup color scale with more distinct colors
@@ -120,7 +130,7 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
     
     // Look for direct country match
     let countryData = data.find(d => 
-      d.country.toLowerCase() === countryName.toLowerCase()
+      d.country && d.country.toLowerCase() === countryName.toLowerCase()
     );
     
     // If not found, try through our country code mappings
@@ -134,8 +144,8 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
     // Last resort: fuzzy name matching
     if (!countryData) {
       countryData = data.find(d => 
-        countryName.toLowerCase().includes(d.country.toLowerCase()) || 
-        d.country.toLowerCase().includes(countryName.toLowerCase())
+        d.country && (countryName.toLowerCase().includes(d.country.toLowerCase()) || 
+        d.country.toLowerCase().includes(countryName.toLowerCase()))
       );
     }
     
@@ -205,6 +215,14 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
   };
 
   const legendValues = getLegendValues();
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full text-red-500">
+        <div>Error loading map: {error}</div>
+      </div>
+    );
+  }
 
   if (!mapReady) {
     return (

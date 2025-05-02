@@ -11,6 +11,7 @@ const MapVisualization = () => {
   const [selectedCountry, setSelectedCountry] = useState(null)
   const [timelineAnimating, setTimelineAnimating] = useState(false)
   const [timelineInterval, setTimelineInterval] = useState(null)
+  const [error, setError] = useState(null)
   
   const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
   const metrics = [
@@ -23,8 +24,27 @@ const MapVisualization = () => {
     { id: 'corruption', label: 'Corruption' }
   ]
   
-  // Simulate loading time
+  // Load data and check for errors
   useEffect(() => {
+    try {
+      if (!happinessData || happinessData.length === 0) {
+        setError("No happiness data available");
+      } else {
+        console.log(`Loaded ${happinessData.length} total data points`);
+        // Validate that we have data for the selected year
+        const yearData = happinessData.filter(d => d.year === selectedYear);
+        if (yearData.length === 0) {
+          console.warn(`No data found for year ${selectedYear}`);
+        } else {
+          console.log(`Found ${yearData.length} countries with data for ${selectedYear}`);
+        }
+      }
+    } catch (err) {
+      console.error("Error loading happiness data:", err);
+      setError(err.message);
+    }
+    
+    // Simulate loading time
     setTimeout(() => {
       setIsLoading(false)
     }, 500)
@@ -73,6 +93,18 @@ const MapVisualization = () => {
       setTimelineInterval(interval)
       setTimelineAnimating(true)
     }
+  }
+  
+  if (error) {
+    return (
+      <div className="bg-background min-h-screen flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-red-600">
+          <h2 className="text-xl font-bold mb-2">Error Loading Data</h2>
+          <p>{error}</p>
+          <p className="mt-4 text-gray-600">Please check the console for more details.</p>
+        </div>
+      </div>
+    );
   }
   
   return (
