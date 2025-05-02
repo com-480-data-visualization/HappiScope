@@ -17,7 +17,7 @@
     "plotly": "^1.0.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.5.0",
+    "react-router-dom": "^7.5.3",
     "three": "^0.175.0"
   },
   "devDependencies": {
