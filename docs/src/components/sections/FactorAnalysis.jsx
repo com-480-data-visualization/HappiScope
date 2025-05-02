@@ -1,9 +1,41 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
+import { scaleLinear } from 'd3-scale'
+// Import from the core packages to ensure proper module loading
+import { ResponsiveScatterPlot } from '@nivo/scatterplot'
+import { ResponsiveBar } from '@nivo/bar'
+import { ResponsiveLine } from '@nivo/line'
+import correlationsData from '../../data/correlations.json'
+import happinessData from '../../data/happiness_data.json'
+import summaryByContinent from '../../data/summary_by_continent.json'
 
 const FactorAnalysis = () => {
+  // Map from readable factor names to data keys
+  const factorMap = {
+    'GDP per Capita': 'gdp_per_capita',
+    'Social Support': 'social_support',
+    'Life Expectancy': 'life_expectancy',
+    'Freedom': 'freedom',
+    'Generosity': 'generosity',
+    'Corruption': 'corruption'
+  }
+
+  const factorDescriptions = {
+    'GDP per Capita': 'Measures the economic strength of a country divided by its population. Higher GDP generally correlates with better living standards.',
+    'Social Support': 'Indicates whether people have someone to count on in times of trouble. Strong social networks significantly contribute to wellbeing.',
+    'Life Expectancy': 'Reflects healthy life expectancy and the overall quality of healthcare systems in a country.',
+    'Freedom': 'Measures the degree to which people feel they have freedom to make life choices. Personal autonomy is central to happiness.',
+    'Generosity': 'Reflects the prevalence of charitable donations and helping behaviors in society. Giving has benefits both for recipients and givers.',
+    'Corruption': 'Measures perception of corruption in government and business. Less corruption is associated with higher trust and life satisfaction.'
+  }
+
   const [selectedFactor, setSelectedFactor] = useState('GDP per Capita')
   const [isLoading, setIsLoading] = useState(true)
+  const [factorCorrelation, setFactorCorrelation] = useState(0)
+  const [factorRegionalData, setFactorRegionalData] = useState([])
+  const [factorTimeData, setFactorTimeData] = useState([])
+  const [factorImpactData, setFactorImpactData] = useState([])
+  const [error, setError] = useState(null)
   
   const factors = [
     'GDP per Capita',
@@ -14,14 +46,116 @@ const FactorAnalysis = () => {
     'Corruption'
   ]
 
-  // Simulate loading delay for placeholders
+  // Get data and calculate statistics when selected factor changes
   useEffect(() => {
-    setIsLoading(true)
-    const timer = setTimeout(() => {
+    try {
+      setIsLoading(true)
+      
+      // Get factor correlation from correlations.json
+      const factorKey = factorMap[selectedFactor]
+      const corrIndex = correlationsData.columns.indexOf(factorKey)
+      const scoreIndex = correlationsData.columns.indexOf('score')
+      
+      if (corrIndex !== -1 && scoreIndex !== -1) {
+        // Get the correlation with happiness score
+        const correlation = correlationsData.data[scoreIndex][corrIndex]
+        setFactorCorrelation(Math.abs(correlation).toFixed(2))
+      }
+      
+      // Calculate regional averages for the factor
+      // Group by continent first since the data is an array of objects
+      const continentGroups = {}
+      summaryByContinent.forEach(item => {
+        if (!continentGroups[item.continent]) {
+          continentGroups[item.continent] = []
+        }
+        continentGroups[item.continent].push(item)
+      })
+      
+      const continents = Object.keys(continentGroups)
+      const regionalData = continents.map(continent => {
+        const continentData = continentGroups[continent]
+        // Average across all years
+        const factorValues = continentData.map(d => d[factorKey]).filter(v => v !== undefined && !isNaN(v))
+        const avg = factorValues.length > 0 
+          ? factorValues.reduce((sum, val) => sum + val, 0) / factorValues.length 
+          : 0
+        
+        return {
+          continent: continent,
+          value: avg
+        }
+      }).filter(d => d.value > 0)
+      
+      setFactorRegionalData(regionalData)
+      
+      // Calculate time trends (global average by year)
+      const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+      const timeData = years.map(year => {
+        const yearData = happinessData.filter(d => d.year === year)
+        const factorValues = yearData.map(d => d[factorKey]).filter(v => v !== undefined && !isNaN(v))
+        const avg = factorValues.length > 0 
+          ? factorValues.reduce((sum, val) => sum + val, 0) / factorValues.length 
+          : 0
+        
+        // Also calculate for specific regions (Europe and Africa for contrast)
+        const europeData = yearData.filter(d => d.continent === 'Europe')
+        const europeAvg = europeData.length > 0
+          ? europeData.map(d => d[factorKey]).filter(v => v !== undefined && !isNaN(v))
+              .reduce((sum, val) => sum + val, 0) / europeData.length
+          : 0
+          
+        const africaData = yearData.filter(d => d.continent === 'Africa')
+        const africaAvg = africaData.length > 0
+          ? africaData.map(d => d[factorKey]).filter(v => v !== undefined && !isNaN(v))
+              .reduce((sum, val) => sum + val, 0) / africaData.length
+          : 0
+        
+        return {
+          year: year,
+          global: avg,
+          europe: europeAvg,
+          africa: africaAvg
+        }
+      })
+      
+      setFactorTimeData(timeData)
+      
+      // Calculate the impact by income group
+      const incomeGroups = ['Very High', 'High', 'Medium', 'Low']
+      const impactData = incomeGroups.map(group => {
+        const groupData = happinessData.filter(d => d.development_category === group)
+        const factorValues = groupData.map(d => d[factorKey]).filter(v => v !== undefined && !isNaN(v))
+        const avg = factorValues.length > 0 
+          ? factorValues.reduce((sum, val) => sum + val, 0) / factorValues.length 
+          : 0
+        
+        // Calculate the proportion of total happiness this factor represents
+        const scoreValues = groupData.map(d => d.score).filter(v => v !== undefined && !isNaN(v))
+        const avgScore = scoreValues.length > 0 
+          ? scoreValues.reduce((sum, val) => sum + val, 0) / scoreValues.length 
+          : 0
+          
+        const proportion = avgScore > 0 ? (avg / avgScore) * 100 : 0
+        
+        return {
+          group: group,
+          average: avg,
+          proportion: Math.min(proportion, 100) // Cap at 100% for display
+        }
+      })
+      
+      setFactorImpactData(impactData)
+      
+      // Simulate a shorter loading time
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 300)
+    } catch (err) {
+      console.error("Error processing data for factor analysis:", err)
+      setError(err.message)
       setIsLoading(false)
-    }, 1200)
-    
-    return () => clearTimeout(timer)
+    }
   }, [selectedFactor])
 
   const LoadingPlaceholder = () => (
@@ -30,6 +164,161 @@ const FactorAnalysis = () => {
       <p className="text-gray-500 text-sm">Loading visualization...</p>
     </div>
   )
+
+  // Color handling functions
+  const getColorScale = (min = 0, max = 10) => {
+    return scaleLinear()
+      .domain([min, min + (max - min) * 0.25, min + (max - min) * 0.5, min + (max - min) * 0.75, max])
+      .range(["#053061", "#2166ac", "#92c5de", "#66bd63", "#1a9850"])  // Blue to green gradient
+      .clamp(true);
+  }
+  
+  const getNegativeColorScale = (min = 0, max = 1) => {
+    return scaleLinear()
+      .domain([min, min + (max - min) * 0.25, min + (max - min) * 0.5, min + (max - min) * 0.75, max])
+      .range(["#1a9850", "#91cf60", "#fee08b", "#fc8d59", "#d73027"])  // Green to red gradient (inverted)
+      .clamp(true);
+  }
+  
+  // Get factor-specific color based on the selected factor
+  const getFactorColor = (factor) => {
+    const colorMap = {
+      'GDP per Capita': '#3949ab', // Indigo
+      'Social Support': '#00897b', // Teal
+      'Life Expectancy': '#43a047', // Green
+      'Freedom': '#7cb342', // Light Green
+      'Generosity': '#ffb300', // Amber
+      'Corruption': '#e53935'  // Red
+    };
+    return colorMap[factor] || '#3B82F6'; // Default to blue
+  }
+  
+  // Prepare scatter plot data
+  const getScatterPlotData = useCallback(() => {
+    const factorKey = factorMap[selectedFactor]
+    
+    // Filter only valid data points and exclude those with null continent
+    const validData = happinessData.filter(d => 
+      d[factorKey] !== undefined && 
+      d.score !== undefined && 
+      !isNaN(d[factorKey]) && 
+      !isNaN(d.score) &&
+      d.continent && d.continent !== null // Exclude data points with null continent
+    )
+    
+    // Create series by continent for better visualization
+    const continentMap = {}
+    validData.forEach(d => {
+      if (!continentMap[d.continent]) {
+        continentMap[d.continent] = []
+      }
+      continentMap[d.continent].push({
+        x: d[factorKey],
+        y: d.score,
+        country: d.country,
+        continent: d.continent,
+        year: d.year
+      })
+    })
+    
+    // Convert to array format for Nivo
+    return Object.keys(continentMap).map(continent => ({
+      id: continent,
+      data: continentMap[continent]
+    }))
+  }, [selectedFactor, factorMap])
+  
+  // Custom tooltip for scatter plot
+  const ScatterTooltip = ({ node }) => (
+    <div
+      className="bg-gray-800 text-white p-2 text-xs rounded shadow-lg"
+      style={{ maxWidth: '200px' }}
+    >
+      <div className="font-bold">{node.data.country}</div>
+      <div>{node.data.continent} ({node.data.year})</div>
+      <div className="flex justify-between mt-1">
+        <span>{selectedFactor}:</span> 
+        <span className="font-medium">{node.data.x.toFixed(2)}</span>
+      </div>
+      <div className="flex justify-between">
+        <span>Happiness Score:</span> 
+        <span className="font-medium">{node.data.y.toFixed(2)}</span>
+      </div>
+    </div>
+  )
+  
+  // Prepare regional data for bar chart
+  const getRegionalBarData = useCallback(() => {
+    return factorRegionalData.map(d => ({
+      continent: d.continent,
+      value: d.value,
+      color: selectedFactor === 'Corruption' 
+        ? getNegativeColorScale(0, Math.max(...factorRegionalData.map(r => r.value)))(d.value)
+        : getColorScale(0, Math.max(...factorRegionalData.map(r => r.value)))(d.value)
+    }))
+  }, [factorRegionalData, selectedFactor])
+  
+  // Prepare time trend data for line chart
+  const getTimeLineData = useCallback(() => {
+    return [
+      {
+        id: "Global",
+        color: "#3B82F6",
+        data: factorTimeData.map(d => ({ 
+          x: d.year, 
+          y: d.global 
+        }))
+      },
+      {
+        id: "Europe",
+        color: "#10B981",
+        data: factorTimeData.map(d => ({ 
+          x: d.year, 
+          y: d.europe 
+        }))
+      },
+      {
+        id: "Africa",
+        color: "#F59E0B",
+        data: factorTimeData.map(d => ({ 
+          x: d.year, 
+          y: d.africa 
+        }))
+      }
+    ]
+  }, [factorTimeData])
+  
+  // Prepare development impact data for horizontal bars
+  const getImpactBarData = useCallback(() => {
+    return factorImpactData.map(d => ({
+      group: d.group,
+      value: d.proportion,
+      color: "#3B82F6"
+    }))
+  }, [factorImpactData])
+  
+  // Custom tooltip for time trend
+  const TimeTooltip = ({ point }) => (
+    <div className="bg-gray-800 text-white p-2 text-xs rounded shadow-lg">
+      <div className="font-bold">{point.serieId} - {point.data.x}</div>
+      <div className="flex justify-between mt-1">
+        <span>{selectedFactor}:</span> 
+        <span className="font-medium">{point.data.y.toFixed(2)}</span>
+      </div>
+    </div>
+  )
+
+  if (error) {
+    return (
+      <div className="bg-background min-h-screen flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-red-600">
+          <h2 className="text-xl font-bold mb-2">Error Loading Factor Analysis</h2>
+          <p>{error}</p>
+          <p className="mt-4 text-gray-600">Please check the console for more details.</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-background min-h-screen">
@@ -42,7 +331,7 @@ const FactorAnalysis = () => {
           <h1 className="section-title text-center">Happiness Factor Analysis</h1>
           <p className="text-gray-600 text-center mb-12 max-w-3xl mx-auto">
             Explore the relationship between happiness scores and various contributing factors
-            across different regions and time periods.
+            across different regions and time periods. Compare how each factor impacts overall happiness.
           </p>
         </motion.div>
 
@@ -53,22 +342,136 @@ const FactorAnalysis = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mb-8 flex justify-center"
         >
-          <div className="bg-white shadow-md rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-3 text-center text-gray-800">Select Factor:</h3>
-            <div className="flex flex-wrap gap-2 justify-center">
+          <div className="bg-white shadow-md rounded-lg p-6 max-w-4xl w-full">
+            <h3 className="text-lg font-medium mb-4 text-center text-gray-800">Select a Happiness Factor to Analyze:</h3>
+            <div className="flex flex-wrap gap-3 justify-center">
               {factors.map(factor => (
                 <button
                   key={factor}
                   onClick={() => setSelectedFactor(factor)}
-                  className={`px-4 py-2 rounded-md font-medium transition-all duration-200 ${
+                  className={`px-4 py-2.5 rounded-lg font-medium transition-all duration-300 ${
                     selectedFactor === factor
-                      ? 'bg-primary text-white shadow-md ring-2 ring-primary/20'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? `bg-gradient-to-r ${
+                          factor === 'GDP per Capita' ? 'from-indigo-600 to-indigo-500' :
+                          factor === 'Social Support' ? 'from-teal-600 to-teal-500' :
+                          factor === 'Life Expectancy' ? 'from-green-600 to-green-500' :
+                          factor === 'Freedom' ? 'from-lightGreen-600 to-lightGreen-500' :
+                          factor === 'Generosity' ? 'from-amber-600 to-amber-500' :
+                          'from-red-600 to-red-500'
+                        } text-white shadow-md ring-2 ring-primary/20`
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105'
                   }`}
                 >
-                  {factor}
+                  <span className="flex items-center">
+                    {factor === 'GDP per Capita' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    )}
+                    {factor === 'Social Support' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    )}
+                    {factor === 'Life Expectancy' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                    )}
+                    {factor === 'Freedom' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                      </svg>
+                    )}
+                    {factor === 'Generosity' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                      </svg>
+                    )}
+                    {factor === 'Corruption' && (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                    )}
+                    {factor}
+                  </span>
                 </button>
               ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Factor Definition */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="mb-8"
+        >
+          <div className={`bg-white shadow-md rounded-lg p-6 border-l-4 ${
+            selectedFactor === 'GDP per Capita' ? 'border-indigo-500' :
+            selectedFactor === 'Social Support' ? 'border-teal-500' :
+            selectedFactor === 'Life Expectancy' ? 'border-green-500' :
+            selectedFactor === 'Freedom' ? 'border-lightGreen-500' :
+            selectedFactor === 'Generosity' ? 'border-amber-500' :
+            'border-red-500'
+          }`}>
+            <div className="flex items-start">
+              {selectedFactor === 'GDP per Capita' && (
+                <div className="bg-indigo-100 p-3 rounded-full mr-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              )}
+              {selectedFactor === 'Social Support' && (
+                <div className="bg-teal-100 p-3 rounded-full mr-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+              )}
+              {selectedFactor === 'Life Expectancy' && (
+                <div className="bg-green-100 p-3 rounded-full mr-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </div>
+              )}
+              {selectedFactor === 'Freedom' && (
+                <div className="bg-green-100 p-3 rounded-full mr-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                  </svg>
+                </div>
+              )}
+              {selectedFactor === 'Generosity' && (
+                <div className="bg-amber-100 p-3 rounded-full mr-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                  </svg>
+                </div>
+              )}
+              {selectedFactor === 'Corruption' && (
+                <div className="bg-red-100 p-3 rounded-full mr-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+              )}
+              <div>
+                <h3 className={`text-lg font-medium mb-2 ${
+                  selectedFactor === 'GDP per Capita' ? 'text-indigo-700' :
+                  selectedFactor === 'Social Support' ? 'text-teal-700' :
+                  selectedFactor === 'Life Expectancy' ? 'text-green-700' :
+                  selectedFactor === 'Freedom' ? 'text-green-700' :
+                  selectedFactor === 'Generosity' ? 'text-amber-700' :
+                  'text-red-700'
+                }`}>What is {selectedFactor}?</h3>
+                <p className="text-gray-700 leading-relaxed">
+                  {factorDescriptions[selectedFactor]}
+                </p>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -85,54 +488,107 @@ const FactorAnalysis = () => {
             <h3 className="text-xl font-semibold mb-4 text-gray-800">
               Correlation with Happiness Score
             </h3>
-            <div className="bg-gray-100 rounded-md h-80 flex items-center justify-center mb-4 relative overflow-hidden">
+            <div className="bg-gray-100 rounded-md h-80 mb-4 relative overflow-hidden">
               {isLoading ? (
                 <LoadingPlaceholder />
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center p-6">
-                  <p className="text-gray-500 mb-4">
-                    [Scatter Plot: {selectedFactor} vs Happiness]
-                  </p>
-                  <div className="w-full max-w-md h-48 bg-white rounded-lg shadow-inner p-4 relative">
-                    {/* Y-axis label */}
-                    <div className="absolute -left-6 top-1/2 -translate-y-1/2 transform -rotate-90 text-xs text-gray-500">
-                      Happiness Score
-                    </div>
-                    
-                    {/* X-axis label */}
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-gray-500">
-                      {selectedFactor}
-                    </div>
-                    
-                    {/* Axis lines */}
-                    <div className="absolute left-10 top-0 w-px h-full bg-gray-300"></div>
-                    <div className="absolute left-0 bottom-10 w-full h-px bg-gray-300"></div>
-                    
-                    {/* Sample data points */}
-                    <div className="absolute left-[15%] bottom-[30%] w-3 h-3 rounded-full bg-blue-500 opacity-70"></div>
-                    <div className="absolute left-[25%] bottom-[45%] w-3 h-3 rounded-full bg-blue-500 opacity-70"></div>
-                    <div className="absolute left-[35%] bottom-[38%] w-3 h-3 rounded-full bg-blue-500 opacity-70"></div>
-                    <div className="absolute left-[45%] bottom-[50%] w-3 h-3 rounded-full bg-blue-500 opacity-70"></div>
-                    <div className="absolute left-[55%] bottom-[60%] w-3 h-3 rounded-full bg-blue-500 opacity-70"></div>
-                    <div className="absolute left-[65%] bottom-[65%] w-3 h-3 rounded-full bg-blue-500 opacity-70"></div>
-                    <div className="absolute left-[75%] bottom-[70%] w-3 h-3 rounded-full bg-blue-500 opacity-70"></div>
-                    <div className="absolute left-[85%] bottom-[75%] w-3 h-3 rounded-full bg-blue-500 opacity-70"></div>
-                    
-                    {/* Trend line */}
-                    <div className="absolute left-[15%] bottom-[35%] w-[70%] h-px bg-primary transform rotate-[30deg] origin-bottom-left"></div>
-                    
-                    {/* Correlation value */}
-                    <div className="absolute top-2 right-2 bg-gray-100 px-2 py-1 rounded text-xs text-gray-800">
-                      r = 0.73
-                    </div>
-                  </div>
-                </div>
+                <ResponsiveScatterPlot
+                  data={getScatterPlotData()}
+                  margin={{ top: 20, right: 120, bottom: 50, left: 60 }}
+                  xScale={{ type: 'linear', min: 'auto', max: 'auto' }}
+                  yScale={{ type: 'linear', min: 'auto', max: 'auto' }}
+                  blendMode="multiply"
+                  axisTop={null}
+                  axisRight={null}
+                  axisBottom={{
+                    tickSize: 5,
+                    tickPadding: 5,
+                    tickRotation: 0,
+                    legend: selectedFactor,
+                    legendPosition: 'middle',
+                    legendOffset: 40,
+                    tickLine: { stroke: '#dddddd' }
+                  }}
+                  axisLeft={{
+                    tickSize: 5,
+                    tickPadding: 5,
+                    tickRotation: 0,
+                    legend: 'Happiness Score',
+                    legendPosition: 'middle',
+                    legendOffset: -50,
+                    tickLine: { stroke: '#dddddd' }
+                  }}
+                  colors={{ scheme: 'set2' }}
+                  nodeSize={8}
+                  nodeBorderWidth={1.5}
+                  nodeBorderColor={{ from: 'color', modifiers: [['darker', 0.5]] }}
+                  enableGridX={true}
+                  enableGridY={true}
+                  gridXValues={5}
+                  gridYValues={5}
+                  gridOpacity={0.2}
+                  isInteractive={true}
+                  useMesh={true}
+                  animate={true}
+                  motionConfig="gentle"
+                  legends={[
+                    {
+                      anchor: 'top-right',
+                      direction: 'column',
+                      justify: false,
+                      translateX: 100,
+                      translateY: 0,
+                      itemsSpacing: 5,
+                      itemDirection: 'left-to-right',
+                      itemWidth: 100,
+                      itemHeight: 12,
+                      itemOpacity: 0.8,
+                      symbolSize: 10,
+                      symbolShape: 'circle',
+                      effects: [
+                        {
+                          on: 'hover',
+                          style: {
+                            itemOpacity: 1,
+                            symbolSize: 12
+                          }
+                        }
+                      ]
+                    }
+                  ]}
+                  tooltip={ScatterTooltip}
+                  theme={{
+                    tooltip: {
+                      container: {
+                        background: 'transparent',
+                        boxShadow: 'none',
+                        padding: 0
+                      }
+                    },
+                    axis: {
+                      legend: {
+                        text: {
+                          fontSize: 12,
+                          fontWeight: 'bold',
+                          fill: '#555555'
+                        }
+                      }
+                    },
+                    grid: {
+                      line: {
+                        stroke: '#dddddd',
+                        strokeWidth: 1
+                      }
+                    }
+                  }}
+                  layers={["grid", "axes", "nodes", "markers", "mesh", "legends"]}
+                />
               )}
             </div>
             <p className="text-gray-600">
-              This scatter plot shows the correlation between {selectedFactor} and
+              This scatter plot shows the correlation between {selectedFactor.toLowerCase()} and
               overall happiness scores across all countries. Each point represents a country,
-              and the trend line indicates a {selectedFactor === 'Corruption' ? 'negative' : 'positive'} correlation.
+              and the colors indicate different continents. The correlation is {factorCorrelation}.
             </p>
           </motion.div>
 
@@ -146,54 +602,85 @@ const FactorAnalysis = () => {
             <h3 className="text-xl font-semibold mb-4 text-gray-800">
               Regional Comparison
             </h3>
-            <div className="bg-gray-100 rounded-md h-80 flex items-center justify-center mb-4 relative overflow-hidden">
+            <div className="bg-gray-100 rounded-md h-80 mb-4 relative overflow-hidden">
               {isLoading ? (
                 <LoadingPlaceholder />
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center p-6">
-                  <p className="text-gray-500 mb-4">
-                    [Bar Chart: {selectedFactor} by Region]
-                  </p>
-                  <div className="w-full max-w-md h-48 bg-white rounded-lg shadow-inner p-4 relative flex items-end justify-around">
-                    {/* Y-axis label */}
-                    <div className="absolute -left-6 top-1/2 -translate-y-1/2 transform -rotate-90 text-xs text-gray-500">
-                      {selectedFactor} Score
+                <ResponsiveBar
+                  data={getRegionalBarData()}
+                  keys={['value']}
+                  indexBy="continent"
+                  margin={{ top: 20, right: 20, bottom: 50, left: 60 }}
+                  padding={0.3}
+                  colors={({ data }) => data.color}
+                  borderColor={{ from: 'color', modifiers: [['darker', 0.6]] }}
+                  borderWidth={1}
+                  borderRadius={2}
+                  axisBottom={{
+                    tickSize: 5,
+                    tickPadding: 5,
+                    tickRotation: 0,
+                    legend: 'Continent',
+                    legendPosition: 'middle',
+                    legendOffset: 40,
+                    tickLine: { stroke: '#dddddd' }
+                  }}
+                  axisLeft={{
+                    tickSize: 5,
+                    tickPadding: 5,
+                    tickRotation: 0,
+                    legend: `${selectedFactor} Score`,
+                    legendPosition: 'middle',
+                    legendOffset: -50,
+                    tickLine: { stroke: '#dddddd' }
+                  }}
+                  enableGridY={true}
+                  gridYValues={5}
+                  gridOpacity={0.15}
+                  labelSkipWidth={12}
+                  labelSkipHeight={12}
+                  labelTextColor={{ from: 'color', modifiers: [['darker', 2.4]] }}
+                  animate={true}
+                  motionConfig="gentle"
+                  tooltip={({ value, indexValue }) => (
+                    <div className="bg-gray-800 text-white p-2 text-xs rounded shadow-lg">
+                      <div className="font-bold">{indexValue}</div>
+                      <div className="flex justify-between mt-1">
+                        <span>{selectedFactor}:</span> 
+                        <span className="font-medium">{value.toFixed(2)}</span>
+                      </div>
                     </div>
-                    
-                    {/* X-axis line */}
-                    <div className="absolute left-0 bottom-10 w-full h-px bg-gray-300"></div>
-                    
-                    {/* Bars */}
-                    <div className="flex items-end justify-around w-full h-full pb-10 px-2">
-                      <div className="flex flex-col items-center">
-                        <div className="w-8 bg-primary rounded-t" style={{ height: '30%' }}></div>
-                        <span className="text-xs mt-1 text-gray-500">Africa</span>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <div className="w-8 bg-primary rounded-t" style={{ height: '45%' }}></div>
-                        <span className="text-xs mt-1 text-gray-500">Americas</span>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <div className="w-8 bg-primary rounded-t" style={{ height: '40%' }}></div>
-                        <span className="text-xs mt-1 text-gray-500">Asia</span>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <div className="w-8 bg-primary rounded-t" style={{ height: '65%' }}></div>
-                        <span className="text-xs mt-1 text-gray-500">Europe</span>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <div className="w-8 bg-primary rounded-t" style={{ height: '55%' }}></div>
-                        <span className="text-xs mt-1 text-gray-500">Oceania</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  )}
+                  theme={{
+                    tooltip: {
+                      container: {
+                        background: 'transparent',
+                        boxShadow: 'none',
+                        padding: 0
+                      }
+                    },
+                    axis: {
+                      legend: {
+                        text: {
+                          fontSize: 12,
+                          fontWeight: 'bold',
+                          fill: '#555555'
+                        }
+                      }
+                    },
+                    grid: {
+                      line: {
+                        stroke: '#dddddd',
+                        strokeWidth: 1
+                      }
+                    }
+                  }}
+                />
               )}
             </div>
             <p className="text-gray-600">
-              This bar chart compares {selectedFactor} across different regions,
-              highlighting regional variations in this happiness contributor. Europe generally shows the 
-              highest levels for most positive factors.
+              This bar chart compares {selectedFactor.toLowerCase()} across different continents,
+              highlighting regional variations. {selectedFactor === 'Corruption' ? 'Lower scores are better' : 'Higher scores indicate better outcomes'} for this metric.
             </p>
           </motion.div>
 
@@ -207,61 +694,121 @@ const FactorAnalysis = () => {
             <h3 className="text-xl font-semibold mb-4 text-gray-800">
               Trend Over Time (2015-2024)
             </h3>
-            <div className="bg-gray-100 rounded-md h-80 flex items-center justify-center mb-4 relative overflow-hidden">
+            <div className="bg-gray-100 rounded-md h-80 mb-4 relative overflow-hidden">
               {isLoading ? (
                 <LoadingPlaceholder />
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center p-6">
-                  <p className="text-gray-500 mb-4">
-                    [Line Chart: {selectedFactor} Trend]
-                  </p>
-                  <div className="w-full max-w-md h-48 bg-white rounded-lg shadow-inner p-4 relative">
-                    {/* Y-axis label */}
-                    <div className="absolute -left-6 top-1/2 -translate-y-1/2 transform -rotate-90 text-xs text-gray-500">
-                      {selectedFactor} Score
-                    </div>
-                    
-                    {/* X-axis line and label */}
-                    <div className="absolute left-0 bottom-10 w-full h-px bg-gray-300"></div>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-gray-500">
-                      Year (2015-2024)
-                    </div>
-                    
-                    {/* Lines */}
-                    <svg className="absolute inset-0 w-full h-full pl-2 pr-4 pt-4 pb-10" preserveAspectRatio="none">
-                      {/* Global line */}
-                      <path d="M 0,60 Q 60,40 120,55 T 240,30 T 360,20" fill="none" stroke="#3B82F6" strokeWidth="2" />
-                      
-                      {/* Europe line */}
-                      <path d="M 0,40 Q 60,25 120,30 T 240,10 T 360,5" fill="none" stroke="#10B981" strokeWidth="2" strokeDasharray="4" />
-                      
-                      {/* Africa line */}
-                      <path d="M 0,80 Q 60,75 120,72 T 240,65 T 360,60" fill="none" stroke="#F59E0B" strokeWidth="2" strokeDasharray="4" />
-                    </svg>
-                    
-                    {/* Legend */}
-                    <div className="absolute top-2 right-2 flex flex-col items-start space-y-1 bg-white/80 p-1 rounded text-xs">
-                      <div className="flex items-center">
-                        <div className="w-3 h-0.5 bg-blue-500 mr-1"></div>
-                        <span className="text-gray-700">Global</span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-0.5 bg-green-500 mr-1 border-b border-dashed"></div>
-                        <span className="text-gray-700">Europe</span>
-                      </div>
-                      <div className="flex items-center">
-                        <div className="w-3 h-0.5 bg-yellow-500 mr-1 border-b border-dashed"></div>
-                        <span className="text-gray-700">Africa</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <ResponsiveLine
+                  data={getTimeLineData()}
+                  margin={{ top: 20, right: 120, bottom: 50, left: 60 }}
+                  xScale={{ type: 'point' }}
+                  yScale={{ 
+                    type: 'linear', 
+                    min: 'auto', 
+                    max: 'auto',
+                    stacked: false, 
+                    reverse: false 
+                  }}
+                  curve="monotoneX"
+                  axisTop={null}
+                  axisRight={null}
+                  axisBottom={{
+                    tickSize: 5,
+                    tickPadding: 5,
+                    tickRotation: 0,
+                    legend: 'Year',
+                    legendOffset: 36,
+                    legendPosition: 'middle',
+                    tickLine: { stroke: '#dddddd' }
+                  }}
+                  axisLeft={{
+                    tickSize: 5,
+                    tickPadding: 5,
+                    tickRotation: 0,
+                    legend: `${selectedFactor} Score`,
+                    legendOffset: -50,
+                    legendPosition: 'middle',
+                    tickLine: { stroke: '#dddddd' }
+                  }}
+                  enableGridY={true}
+                  gridYValues={5}
+                  gridOpacity={0.15}
+                  colors={{ datum: 'color' }}
+                  lineWidth={3}
+                  pointSize={10}
+                  pointColor={{ theme: 'background' }}
+                  pointBorderWidth={2}
+                  pointBorderColor={{ from: 'serieColor' }}
+                  pointLabelYOffset={-12}
+                  enableArea={true}
+                  areaOpacity={0.1}
+                  enableCrosshair={true}
+                  crosshairType="bottom"
+                  useMesh={true}
+                  animate={true}
+                  motionConfig="gentle"
+                  legends={[
+                    {
+                      anchor: 'right',
+                      direction: 'column',
+                      justify: false,
+                      translateX: 100,
+                      translateY: 0,
+                      itemsSpacing: 8,
+                      itemDirection: 'left-to-right',
+                      itemWidth: 80,
+                      itemHeight: 20,
+                      itemOpacity: 0.8,
+                      symbolSize: 12,
+                      symbolShape: 'circle',
+                      symbolBorderColor: 'rgba(0, 0, 0, .5)',
+                      effects: [
+                        {
+                          on: 'hover',
+                          style: {
+                            itemBackground: 'rgba(0, 0, 0, .03)',
+                            itemOpacity: 1
+                          }
+                        }
+                      ]
+                    }
+                  ]}
+                  tooltip={TimeTooltip}
+                  theme={{
+                    tooltip: {
+                      container: {
+                        background: 'transparent',
+                        boxShadow: 'none',
+                        padding: 0
+                      }
+                    },
+                    axis: {
+                      legend: {
+                        text: {
+                          fontSize: 12,
+                          fontWeight: 'bold',
+                          fill: '#555555'
+                        }
+                      }
+                    },
+                    grid: {
+                      line: {
+                        stroke: '#dddddd',
+                        strokeWidth: 1
+                      }
+                    }
+                  }}
+                  enableSlices="x"
+                />
               )}
             </div>
             <p className="text-gray-600">
-              This line chart shows how the importance of {selectedFactor} has
+              This line chart shows how {selectedFactor.toLowerCase()} has
               changed over the past decade globally and by selected regions. Note the
-              increasing trend in Europe and the slower progress in Africa.
+              {factorTimeData.length > 0 && 
+               factorTimeData[factorTimeData.length-1].europe > factorTimeData[0].europe ? 
+               ' increasing trend in Europe' : ' trend in Europe'} 
+              compared to Africa.
             </p>
           </motion.div>
 
@@ -273,72 +820,99 @@ const FactorAnalysis = () => {
             className="bg-white shadow-md rounded-lg p-6"
           >
             <h3 className="text-xl font-semibold mb-4 text-gray-800">
-              Impact Analysis
+              Impact by Development Level
             </h3>
-            <div className="bg-gray-100 rounded-md h-80 flex items-center justify-center mb-4 relative overflow-hidden">
+            <div className="bg-gray-100 rounded-md h-80 mb-4 relative overflow-hidden">
               {isLoading ? (
                 <LoadingPlaceholder />
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center p-6">
-                  <p className="text-gray-500 mb-4">
-                    [Impact Visualization of {selectedFactor}]
-                  </p>
-                  <div className="w-full max-w-md h-48 bg-white rounded-lg shadow-inner p-4 relative">
-                    {/* Horizontal bars showing factor contribution */}
-                    <div className="space-y-4 h-full flex flex-col justify-around">
-                      <div>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-xs text-gray-500">High Income</span>
-                          <span className="text-xs font-medium text-gray-700">38%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
-                          <div className="bg-primary h-1.5 rounded-full" style={{ width: '38%' }}></div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-xs text-gray-500">Upper Middle</span>
-                          <span className="text-xs font-medium text-gray-700">29%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
-                          <div className="bg-primary h-1.5 rounded-full" style={{ width: '29%' }}></div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-xs text-gray-500">Lower Middle</span>
-                          <span className="text-xs font-medium text-gray-700">19%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
-                          <div className="bg-primary h-1.5 rounded-full" style={{ width: '19%' }}></div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-xs text-gray-500">Low Income</span>
-                          <span className="text-xs font-medium text-gray-700">14%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
-                          <div className="bg-primary h-1.5 rounded-full" style={{ width: '14%' }}></div>
-                        </div>
+                <ResponsiveBar
+                  data={getImpactBarData()}
+                  keys={['value']}
+                  indexBy="group"
+                  margin={{ top: 20, right: 20, bottom: 50, left: 120 }}
+                  padding={0.3}
+                  layout="horizontal"
+                  colors={({ data, index }) => {
+                    // Create a gradient effect based on development level
+                    const developmentColors = ['#3949ab', '#5e72e4', '#7795f8', '#9ebbff'];
+                    return developmentColors[index];
+                  }}
+                  borderColor={{ from: 'color', modifiers: [['darker', 0.6]] }}
+                  borderWidth={1}
+                  borderRadius={2}
+                  axisTop={null}
+                  axisRight={null}
+                  axisBottom={{
+                    tickSize: 5,
+                    tickPadding: 5,
+                    tickRotation: 0,
+                    legend: 'Relative Importance (%)',
+                    legendPosition: 'middle',
+                    legendOffset: 32,
+                    tickLine: { stroke: '#dddddd' }
+                  }}
+                  axisLeft={{
+                    tickSize: 5,
+                    tickPadding: 5,
+                    tickRotation: 0,
+                    legend: 'Development Category',
+                    legendPosition: 'middle',
+                    legendOffset: -90,
+                    tickLine: { stroke: '#dddddd' }
+                  }}
+                  enableGridX={true}
+                  gridXValues={5}
+                  gridOpacity={0.15}
+                  labelSkipWidth={12}
+                  labelSkipHeight={12}
+                  labelTextColor="#ffffff"
+                  labelFormat={value => `${value.toFixed(1)}%`}
+                  animate={true}
+                  motionConfig="gentle"
+                  tooltip={({ value, indexValue }) => (
+                    <div className="bg-gray-800 text-white p-2 text-xs rounded shadow-lg">
+                      <div className="font-bold">{indexValue}</div>
+                      <div className="flex justify-between mt-1">
+                        <span>Relative Importance:</span> 
+                        <span className="font-medium">{value.toFixed(1)}%</span>
                       </div>
                     </div>
-                    
-                    {/* Label */}
-                    <div className="absolute top-2 left-2 text-xs text-gray-500">
-                      Contribution of {selectedFactor} to Happiness
-                    </div>
-                  </div>
-                </div>
+                  )}
+                  theme={{
+                    tooltip: {
+                      container: {
+                        background: 'transparent',
+                        boxShadow: 'none',
+                        padding: 0
+                      }
+                    },
+                    axis: {
+                      legend: {
+                        text: {
+                          fontSize: 12,
+                          fontWeight: 'bold',
+                          fill: '#555555'
+                        }
+                      }
+                    },
+                    grid: {
+                      line: {
+                        stroke: '#dddddd',
+                        strokeWidth: 1
+                      }
+                    }
+                  }}
+                />
               )}
             </div>
             <p className="text-gray-600">
-              This visualization shows the relative impact of {selectedFactor} on
-              happiness scores compared to other factors across different country income groups.
-              Notice how the contribution varies significantly between high and low-income nations.
+              This visualization shows how the contribution of {selectedFactor.toLowerCase()} to happiness
+              varies across different development categories. 
+              {factorImpactData.length > 0 && 
+                (factorImpactData[0].proportion > factorImpactData[factorImpactData.length-1].proportion ? 
+                  ` Note how this factor is more influential in ${factorImpactData[0].group} development countries compared to ${factorImpactData[factorImpactData.length-1].group} development countries.` : 
+                  ` Note how this factor is more influential in ${factorImpactData[factorImpactData.length-1].group} development countries compared to ${factorImpactData[0].group} development countries.`)}
             </p>
           </motion.div>
         </div>
@@ -355,45 +929,84 @@ const FactorAnalysis = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <h4 className="font-semibold mb-2 text-gray-800">Correlation Coefficient</h4>
-                <p className="text-3xl font-bold text-primary">
-                  {selectedFactor === 'GDP per Capita' && '0.78'}
-                  {selectedFactor === 'Social Support' && '0.73'}
-                  {selectedFactor === 'Life Expectancy' && '0.81'}
-                  {selectedFactor === 'Freedom' && '0.59'}
-                  {selectedFactor === 'Generosity' && '0.17'}
-                  {selectedFactor === 'Corruption' && '-0.42'}
+                <p className={`text-3xl font-bold ${
+                  parseFloat(factorCorrelation) > 0.6 
+                    ? 'text-green-500' 
+                    : parseFloat(factorCorrelation) > 0.3 
+                      ? 'text-yellow-500' 
+                      : 'text-red-500'
+                }`}>
+                  {factorCorrelation}
                 </p>
                 <p className="text-gray-600 mt-2">
-                  {selectedFactor === 'Generosity' ? 'Weak' : selectedFactor === 'Freedom' ? 'Moderate' : selectedFactor === 'Corruption' ? 'Moderate negative' : 'Strong'} correlation between {selectedFactor} and happiness.
+                  {parseFloat(factorCorrelation) > 0.6 
+                    ? 'Strong' 
+                    : parseFloat(factorCorrelation) > 0.3 
+                      ? 'Moderate' 
+                      : 'Weak'} 
+                  {selectedFactor === 'Corruption' ? ' negative' : ''} correlation between {selectedFactor.toLowerCase()} and happiness.
                 </p>
               </div>
+              
               <div>
                 <h4 className="font-semibold mb-2 text-gray-800">Regional Variance</h4>
                 <p className="text-3xl font-bold text-primary">
-                  {selectedFactor === 'GDP per Capita' && '42%'}
-                  {selectedFactor === 'Social Support' && '38%'}
-                  {selectedFactor === 'Life Expectancy' && '35%'}
-                  {selectedFactor === 'Freedom' && '52%'}
-                  {selectedFactor === 'Generosity' && '68%'}
-                  {selectedFactor === 'Corruption' && '73%'}
+                  {factorRegionalData.length > 0 ? (() => {
+                    const values = factorRegionalData.map(d => d.value)
+                    const max = Math.max(...values)
+                    const min = Math.min(...values)
+                    const range = max - min
+                    const avg = values.reduce((sum, val) => sum + val, 0) / values.length
+                    const variance = (range / avg) * 100
+                    return `${variance.toFixed(0)}%`
+                  })() : '0%'}
                 </p>
                 <p className="text-gray-600 mt-2">
-                  Variance in {selectedFactor} contribution across regions, with {selectedFactor === 'Generosity' || selectedFactor === 'Corruption' || selectedFactor === 'Freedom' ? 'high' : 'moderate'} regional differences.
+                  Variance in {selectedFactor.toLowerCase()} across regions, with 
+                  {factorRegionalData.length > 0 && (() => {
+                    const values = factorRegionalData.map(d => d.value)
+                    const max = Math.max(...values)
+                    const min = Math.min(...values)
+                    const range = max - min
+                    const avg = values.reduce((sum, val) => sum + val, 0) / values.length
+                    const variance = (range / avg) * 100
+                    return variance > 50 ? ' high' : variance > 25 ? ' moderate' : ' low'
+                  })()}
+                  {' '}regional differences.
                 </p>
               </div>
+              
               <div>
                 <h4 className="font-semibold mb-2 text-gray-800">Trend Direction</h4>
-                <p className="text-3xl font-bold text-green-500">
-                  {selectedFactor === 'Corruption' ? (
-                    <span className="text-red-500">Decreasing</span>
-                  ) : selectedFactor === 'Generosity' ? (
-                    <span className="text-yellow-500">Stable</span>
-                  ) : (
-                    'Increasing'
-                  )}
+                <p className="text-3xl font-bold">
+                  {factorTimeData.length > 1 && (() => {
+                    const firstValue = factorTimeData[0].global
+                    const lastValue = factorTimeData[factorTimeData.length - 1].global
+                    const change = ((lastValue - firstValue) / firstValue) * 100
+                    
+                    if (Math.abs(change) < 5) {
+                      return <span className="text-yellow-500">Stable</span>
+                    } else if (change > 0) {
+                      return <span className="text-green-500">Increasing</span>
+                    } else {
+                      return <span className="text-red-500">Decreasing</span>
+                    }
+                  })()}
                 </p>
                 <p className="text-gray-600 mt-2">
-                  {selectedFactor} shows {selectedFactor === 'Corruption' ? 'a decreasing' : selectedFactor === 'Generosity' ? 'little change in' : 'an increasing'} importance over the past decade (2015-2024).
+                  {factorTimeData.length > 1 && (() => {
+                    const firstValue = factorTimeData[0].global
+                    const lastValue = factorTimeData[factorTimeData.length - 1].global
+                    const change = ((lastValue - firstValue) / firstValue) * 100
+                    
+                    if (Math.abs(change) < 5) {
+                      return `${selectedFactor} has remained relatively stable over the past decade (2015-2024).`
+                    } else if (change > 0) {
+                      return `${selectedFactor} has increased by approximately ${Math.abs(change).toFixed(1)}% over the past decade (2015-2024).`
+                    } else {
+                      return `${selectedFactor} has decreased by approximately ${Math.abs(change).toFixed(1)}% over the past decade (2015-2024).`
+                    }
+                  })()}
                 </p>
               </div>
             </div>
@@ -415,35 +1028,83 @@ const FactorAnalysis = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
                 {selectedFactor === 'GDP per Capita' && (
-                  <span>While GDP per capita strongly correlates with happiness, its impact diminishes at higher income levels, suggesting a "saturation point" for economic prosperity.</span>
+                  <span>While GDP per capita strongly correlates with happiness (r = {factorCorrelation}), its impact diminishes at higher income levels, suggesting a "saturation point" for economic prosperity.</span>
                 )}
                 {selectedFactor === 'Social Support' && (
-                  <span>Social support shows consistently high importance across all regions and income levels, highlighting the universal human need for supportive relationships.</span>
+                  <span>Social support shows consistently high importance across all regions and income levels (r = {factorCorrelation}), highlighting the universal human need for supportive relationships.</span>
                 )}
                 {selectedFactor === 'Life Expectancy' && (
-                  <span>Health (measured by life expectancy) has the strongest correlation with happiness among all factors, emphasizing the fundamental importance of well-being.</span>
+                  <span>Health (measured by life expectancy) has one of the strongest correlations with happiness (r = {factorCorrelation}) among all factors, emphasizing the fundamental importance of well-being.</span>
                 )}
                 {selectedFactor === 'Freedom' && (
-                  <span>Freedom to make life choices shows the greatest regional variance, suggesting that cultural and political contexts significantly affect its impact.</span>
+                  <span>Freedom to make life choices shows significant regional variance, suggesting that cultural and political contexts significantly affect its impact (r = {factorCorrelation}).</span>
                 )}
                 {selectedFactor === 'Generosity' && (
-                  <span>Generosity has the weakest correlation with national happiness, though it may have significant effects at individual rather than societal levels.</span>
+                  <span>Generosity has a relatively weak correlation with national happiness (r = {factorCorrelation}), though it may have significant effects at individual rather than societal levels.</span>
                 )}
                 {selectedFactor === 'Corruption' && (
-                  <span>Corruption perception shows a consistent negative correlation with happiness, with the strongest effect in transitioning economies.</span>
+                  <span>Corruption perception shows a consistent negative correlation with happiness (r = {factorCorrelation}), with the strongest effect in transitioning economies.</span>
                 )}
               </li>
               <li className="flex items-start">
                 <svg className="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-                <span>The contribution of {selectedFactor} to happiness has {selectedFactor === 'Corruption' ? 'decreased' : selectedFactor === 'Generosity' ? 'remained stable' : 'increased'} over the past decade, with the most significant changes occurring after 2020.</span>
+                {factorRegionalData.length > 0 && (() => {
+                  // Find highest and lowest regions
+                  const sortedRegions = [...factorRegionalData].sort((a, b) => 
+                    selectedFactor === 'Corruption' ? a.value - b.value : b.value - a.value
+                  )
+                  const highest = sortedRegions[0]
+                  const lowest = sortedRegions[sortedRegions.length - 1]
+                  
+                  return (
+                    <span>
+                      {highest.continent} shows the {selectedFactor === 'Corruption' ? 'lowest' : 'highest'} levels of {selectedFactor.toLowerCase()} 
+                      ({highest.value.toFixed(2)}), while {lowest.continent} shows the {selectedFactor === 'Corruption' ? 'highest' : 'lowest'} 
+                      ({lowest.value.toFixed(2)}). This regional disparity highlights the importance of 
+                      {selectedFactor === 'GDP per Capita' ? ' economic development' : 
+                       selectedFactor === 'Social Support' ? ' community structures' :
+                       selectedFactor === 'Life Expectancy' ? ' healthcare systems' :
+                       selectedFactor === 'Freedom' ? ' political systems' :
+                       selectedFactor === 'Generosity' ? ' cultural values' :
+                       ' governance quality'} in happiness outcomes.
+                    </span>
+                  )
+                })()}
               </li>
               <li className="flex items-start">
                 <svg className="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-                <span>Countries with balanced development across all factors, including {selectedFactor}, tend to have more stable happiness scores over time than those with extreme performance in single areas.</span>
+                <span>
+                  {factorImpactData.length > 0 && (() => {
+                    // Compare very high to low development countries
+                    const veryHigh = factorImpactData.find(d => d.group === 'Very High')
+                    const low = factorImpactData.find(d => d.group === 'Low')
+                    
+                    if (veryHigh && low) {
+                      const difference = Math.abs(veryHigh.proportion - low.proportion).toFixed(1)
+                      const higherIn = veryHigh.proportion > low.proportion ? 'very high development' : 'low development'
+                      
+                      return (
+                        <span>
+                          The relative importance of {selectedFactor.toLowerCase()} is {difference}% higher in {higherIn} countries, 
+                          suggesting that {
+                            selectedFactor === 'GDP per Capita' ? 'economic factors become more/less central as development progresses' : 
+                            selectedFactor === 'Social Support' ? 'social structures play different roles at different development stages' :
+                            selectedFactor === 'Life Expectancy' ? 'health concerns shift in priority based on development level' :
+                            selectedFactor === 'Freedom' ? 'autonomy has different significance across development contexts' :
+                            selectedFactor === 'Generosity' ? 'prosocial behaviors have varying impact based on development' :
+                            'institutional quality has context-dependent effects on wellbeing'
+                          }.
+                        </span>
+                      )
+                    } else {
+                      return `Countries with balanced development across all factors, including ${selectedFactor.toLowerCase()}, tend to have more stable happiness scores over time.`
+                    }
+                  })()}
+                </span>
               </li>
             </ul>
           </div>
