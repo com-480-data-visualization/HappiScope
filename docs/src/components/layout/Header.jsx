@@ -32,7 +32,7 @@ const Header = () => {
     <>
       <header 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? 'bg-white/90 backdrop-blur-md shadow-md py-4' : 'bg-transparent py-6'
+          scrolled ? 'bg-white/90 backdrop-blur-md shadow-md py-6' : 'bg-transparent py-8'
         }`}
       >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -252,7 +252,7 @@ const Header = () => {
         )}
       </AnimatePresence>
       </header>
-    <div className="h-24 md:h-20"></div> {/* Add spacing equal to header height */}
+    <div className="h-32 md:h-28"></div> {/* Add spacing equal to header height */}
   </>
 );
 };
