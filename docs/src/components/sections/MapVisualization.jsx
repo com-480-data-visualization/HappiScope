@@ -150,6 +150,9 @@ const MapVisualization = () => {
         .sort((a, b) => b[1] - a[1])
         .map(([region, score]) => ({ region, score }));
       
+      // Find the maximum region score for normalization
+      const maxRegionScore = sortedRegions.length > 0 ? sortedRegions[0].score : 0;
+      
       // Get top 10 countries
       const top10Countries = [...currentYearData]
         .sort((a, b) => (b.score || 0) - (a.score || 0))
@@ -342,7 +345,8 @@ const MapVisualization = () => {
           topRegions: sortedRegions.slice(0, 3),
           dominantRegion: dominantRegion[0] || '',
           dominantCount: dominantRegion[1] || 0,
-          topCountries: top10Countries.slice(0, 5).map(c => ({ name: c.country, score: c.score }))
+          topCountries: top10Countries.slice(0, 5).map(c => ({ name: c.country, score: c.score })),
+          maxRegionScore
         },
         improvedCountries: { 
           text: improvedCountriesText, 
@@ -686,7 +690,7 @@ const MapVisualization = () => {
                         <div className="w-full bg-gray-200 rounded-full h-1.5">
                           <div 
                             className="bg-green-500 h-1.5 rounded-full" 
-                            style={{width: `${Math.min(100, (region.score / 10) * 100)}%`}}
+                            style={{width: `${Math.min(100, (region.score / globalInsights.happiestRegions.maxRegionScore) * 100)}%`}}
                           />
                         </div>
                       </div>

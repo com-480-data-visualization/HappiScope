@@ -1,7 +1,30 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import happinessData from '../../data/happiness_data.json';
 
 const CountryDetails = ({ country, metric }) => {
+  const [maxValues, setMaxValues] = useState({});
+
+  // Find maximum values for the selected year across all countries
+  useEffect(() => {
+    if (country) {
+      const yearData = happinessData.filter(d => d.year === country.year);
+      
+      // Calculate maximum values for all metrics
+      const calculatedMaxValues = {
+        score: Math.max(...yearData.map(d => d.score || 0)),
+        gdp_per_capita: Math.max(...yearData.map(d => d.gdp_per_capita || 0)),
+        social_support: Math.max(...yearData.map(d => d.social_support || 0)),
+        life_expectancy: Math.max(...yearData.map(d => d.life_expectancy || 0)),
+        freedom: Math.max(...yearData.map(d => d.freedom || 0)),
+        generosity: Math.max(...yearData.map(d => d.generosity || 0)),
+        corruption: Math.max(...yearData.map(d => d.corruption || 0))
+      };
+
+      setMaxValues(calculatedMaxValues);
+    }
+  }, [country]);
+
   if (!country) {
     return (
       <div className="flex items-center justify-center min-h-[300px] p-6 text-gray-500 bg-gray-50/50 rounded-lg">
@@ -20,69 +43,50 @@ const CountryDetails = ({ country, metric }) => {
     return typeof value === 'number' ? value.toFixed(2) : value;
   };
 
-  // Get rating description based on value
+  // Calculate the normalized value (percentage) for progress bars
+  const getNormalizedValue = (metric, value) => {
+    if (value === undefined || value === null || !maxValues[metric]) return 0;
+    return (value / maxValues[metric]) * 100;
+  };
+
+  // Get rating description based on normalized value (percentage)
   const getRatingDescription = (metric, value) => {
     if (value === undefined || value === null) return 'No data';
     
-    if (metric === 'corruption') {
-      // Corruption is inversely rated (lower is better)
-      if (value <= 0.1) return 'Excellent';
-      if (value <= 0.2) return 'Very Good';
-      if (value <= 0.3) return 'Good';
-      if (value <= 0.4) return 'Fair';
-      return 'Poor';
-    }
+    const percentage = getNormalizedValue(metric, value);
     
-    // Standard rating for positive metrics
-    if (value >= 1.25) return 'Excellent'; 
-    if (value >= 0.75) return 'Very Good'; 
-    if (value >= 0.5) return 'Good';  
-    if (value >= 0.25) return 'Fair'; 
+    // For all metrics including corruption (now higher = better for all)
+    if (percentage >= 80) return 'Excellent';
+    if (percentage >= 60) return 'Very Good';
+    if (percentage >= 40) return 'Good';
+    if (percentage >= 20) return 'Fair';
     return 'Poor';
   };
 
-  // Style metrics based on values
+  // Style metrics based on normalized values
   const getMetricStyle = (metric, value) => {
     if (value === undefined || value === null) return {};
     
-    if (metric === 'score' || metric === 'freedom' || 
-        metric === 'social_support' || metric === 'gdp_per_capita') {
-      if (value >= 1.25) return { color: '#22c55e' }; // High - green
-      if (value >= 0.75) return { color: '#84cc16' }; // Medium-high - light green
-      if (value >= 0.5) return { color: '#eab308' };  // Medium - yellow
-      if (value >= 0.25) return { color: '#f97316' }; // Medium-low - orange
-      return { color: '#ef4444' };                    // Low - red
-    }
+    const percentage = getNormalizedValue(metric, value);
     
-    if (metric === 'corruption') {
-      // Reverse scale for corruption (lower is better)
-      if (value <= 0.1) return { color: '#22c55e' };
-      if (value <= 0.2) return { color: '#84cc16' };
-      if (value <= 0.3) return { color: '#eab308' };
-      if (value <= 0.4) return { color: '#f97316' };
-      return { color: '#ef4444' };
-    }
-    
-    return {};
+    // For all metrics (higher = better)
+    if (percentage >= 80) return { color: '#22c55e' }; // High - green
+    if (percentage >= 60) return { color: '#84cc16' }; // Medium-high - light green
+    if (percentage >= 40) return { color: '#eab308' }; // Medium - yellow
+    if (percentage >= 20) return { color: '#f97316' }; // Medium-low - orange
+    return { color: '#ef4444' };                      // Low - red
   };
 
   const getBarColor = (metric, value) => {
     if (value === undefined || value === null) return '#e5e7eb'; // gray-200
     
-    if (metric === 'corruption') {
-      // Reverse scale for corruption (lower is better)
-      if (value <= 0.1) return '#bbf7d0'; // green-200
-      if (value <= 0.2) return '#dcfce7'; // green-100
-      if (value <= 0.3) return '#fef9c3'; // yellow-100
-      if (value <= 0.4) return '#fed7aa'; // orange-100
-      return '#fecaca'; // red-100
-    }
+    const percentage = getNormalizedValue(metric, value);
     
-    // Standard colors for positive metrics
-    if (value >= 1.25) return '#bbf7d0'; // green-200
-    if (value >= 0.75) return '#dcfce7'; // green-100
-    if (value >= 0.5) return '#fef9c3';  // yellow-100
-    if (value >= 0.25) return '#fed7aa'; // orange-100
+    // For all metrics (higher = better)
+    if (percentage >= 80) return '#bbf7d0'; // green-200
+    if (percentage >= 60) return '#dcfce7'; // green-100
+    if (percentage >= 40) return '#fef9c3'; // yellow-100
+    if (percentage >= 20) return '#fed7aa'; // orange-100
     return '#fecaca'; // red-100
   };
 
@@ -92,7 +96,7 @@ const CountryDetails = ({ country, metric }) => {
     { name: 'Life Expectancy', value: country.life_expectancy, key: 'life_expectancy' },
     { name: 'Freedom', value: country.freedom, key: 'freedom' },
     { name: 'Generosity', value: country.generosity, key: 'generosity' },
-    { name: 'Corruption', value: country.corruption, key: 'corruption' }
+    { name: 'Trust (Low Corruption)', value: country.corruption, key: 'corruption' }
   ];
 
   const metadataItems = [
@@ -166,7 +170,7 @@ const CountryDetails = ({ country, metric }) => {
                     <motion.div 
                       initial={{ width: 0 }}
                       animate={{ 
-                        width: `${Math.min(100, (factor.value / 2) * 100)}%` 
+                        width: `${getNormalizedValue(factor.key, factor.value)}%` 
                       }}
                       transition={{ duration: 0.5, delay: 0.1 }}
                       className="h-full rounded-full shadow-inner" 
@@ -183,10 +187,11 @@ const CountryDetails = ({ country, metric }) => {
             <div className="pt-4 border-t border-gray-100">
               <h4 className="text-sm font-semibold text-gray-700 mb-2">Insights</h4>
               <p className="text-sm text-gray-600 mb-3 leading-relaxed">
-                {country.country} ranks {factorData.some(f => f.key === metric && f.value > 1.25) ? 'high' : 
-                factorData.some(f => f.key === metric && f.value > 0.75) ? 'above average' : 
-                factorData.some(f => f.key === metric && f.value > 0.5) ? 'average' : 
-                factorData.some(f => f.key === metric && f.value > 0.25) ? 'below average' : 'low'} 
+                {country.country} ranks 
+                {getNormalizedValue(metric, country[metric]) >= 80 ? ' high' : 
+                 getNormalizedValue(metric, country[metric]) >= 60 ? ' above average' : 
+                 getNormalizedValue(metric, country[metric]) >= 40 ? ' average' : 
+                 getNormalizedValue(metric, country[metric]) >= 20 ? ' below average' : ' low'} 
                 {' '}in {metric === 'score' ? 'happiness' : metric.replace(/_/g, ' ')} compared to other countries in {country.continent || 'its region'}.
               </p>
             </div>
