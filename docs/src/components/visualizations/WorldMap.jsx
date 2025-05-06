@@ -64,7 +64,8 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
   const [tooltipContent, setTooltipContent] = useState("");
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [showTooltip, setShowTooltip] = useState(false);
-  const [position, setPosition] = useState({ coordinates: [0, 20], zoom: 1 });
+  // Initialize with a better default position and zoom level
+  const [position, setPosition] = useState({ coordinates: [10, 20], zoom: 1.2 });
   const [mapReady, setMapReady] = useState(false);
   const [error, setError] = useState(null);
 
@@ -185,10 +186,21 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
     setShowTooltip(false);
   };
 
+  // Mouse position tracking for better tooltip behavior
   const handleMouseMove = (e) => {
     if (showTooltip) {
+      // Get the current mouse position from the event
       const { clientX, clientY } = e;
-      setTooltipPosition({ x: clientX, y: clientY });
+      
+      // Get the bounds of the map container to prevent tooltip from going off-screen
+      const mapContainer = e.currentTarget.getBoundingClientRect();
+      
+      // Calculate tooltip position with offset for better visibility
+      // Ensure tooltip stays within the map container bounds
+      const x = Math.min(Math.max(clientX, mapContainer.left + 100), mapContainer.right - 100);
+      const y = Math.min(Math.max(clientY - 10, mapContainer.top + 50), mapContainer.bottom - 20);
+      
+      setTooltipPosition({ x, y });
     }
   };
 
@@ -234,8 +246,8 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
 
   return (
     <div className="relative w-full h-full">
-      {/* Map Controls */}
-      <div className="absolute top-2 right-2 z-10 flex flex-col space-y-2">
+      {/* Map Controls - Repositioned to avoid overlap with year indicator */}
+      <div className="absolute top-2 left-2 z-10 flex flex-col space-y-2">
         <button
           onClick={handleZoomIn}
           className="p-2 rounded-full bg-white shadow hover:bg-gray-100 focus:outline-none"
@@ -254,13 +266,15 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
         </button>
       </div>
 
-      {/* Tooltip */}
+      {/* Tooltip with improved appearance and positioning */}
       {showTooltip && (
         <div
-          className="absolute z-50 bg-white shadow-lg rounded-md px-3 py-2 text-sm pointer-events-none transform -translate-x-1/2 -translate-y-full"
+          className="absolute z-50 bg-white/95 backdrop-blur-sm shadow-lg rounded-md px-4 py-2.5 text-sm pointer-events-none transform -translate-x-1/2 border border-gray-200"
           style={{
             left: tooltipPosition.x,
-            top: tooltipPosition.y - 10,
+            top: tooltipPosition.y - 20,
+            minWidth: '150px',
+            transition: 'left 0.05s, top 0.05s'
           }}
           dangerouslySetInnerHTML={{ __html: tooltipContent }}
         />
@@ -277,10 +291,15 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
         <ComposableMap
           projection="geoEqualEarth"
           projectionConfig={{
-            scale: 170,
+            scale: 200,
+            center: [0, 0]
           }}
           width={960}
           height={500}
+          style={{
+            width: "100%",
+            height: "100%"
+          }}
         >
           <ZoomableGroup
             zoom={position.zoom}
