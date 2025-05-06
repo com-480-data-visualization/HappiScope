@@ -9,6 +9,68 @@ import correlationsData from '../../data/correlations.json'
 import happinessData from '../../data/happiness_data.json'
 import summaryByContinent from '../../data/summary_by_continent.json'
 
+// Global tooltip component that positions relative to viewport
+const GlobalTooltip = ({ content, x, y, width, height }) => {
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const tooltipRef = useRef(null);
+
+  // Calculate tooltip position on mount and when coordinates change
+  useEffect(() => {
+    if (!tooltipRef.current) return;
+    
+    const tooltipWidth = tooltipRef.current.offsetWidth;
+    const tooltipHeight = tooltipRef.current.offsetHeight;
+    
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Convert container-relative coordinates to viewport coordinates
+    const rect = tooltipRef.current.parentElement.getBoundingClientRect();
+    const absX = rect.left + x;
+    const absY = rect.top + y;
+    
+    // Initial position (centered horizontally above point)
+    let posX = absX - (tooltipWidth / 2);
+    let posY = absY - tooltipHeight - 10; // Default: above with padding
+    
+    // Adjust if too close to the right edge
+    if (posX + tooltipWidth > viewportWidth) {
+      posX = viewportWidth - tooltipWidth - 10;
+    }
+    
+    // Adjust if too close to the left edge
+    if (posX < 10) {
+      posX = 10;
+    }
+    
+    // Flip to below if too close to the top edge
+    if (posY < 10) {
+      posY = absY + 20; // Below with padding
+    }
+    
+    setPosition({
+      left: posX,
+      top: posY
+    });
+  }, [x, y, width, height, content]);
+
+  return (
+    <div
+      ref={tooltipRef}
+      className="fixed z-50 bg-gray-800 text-white p-3 text-xs rounded-md shadow-xl"
+      style={{
+        left: position.left,
+        top: position.top,
+        maxWidth: '250px',
+        pointerEvents: 'none'
+      }}
+    >
+      {content}
+    </div>
+  );
+};
+
 const FactorAnalysis = () => {
   // Map from readable factor names to data keys
   const factorMap = {
@@ -45,6 +107,15 @@ const FactorAnalysis = () => {
     'Generosity',
     'Corruption'
   ]
+
+  // Add a state to manage the global tooltip
+  const [tooltip, setTooltip] = useState(null);
+  const chartContainerRef = useRef(null);
+
+  // Create a handler to clear the tooltip when pointer leaves chart
+  const handleMouseLeave = useCallback(() => {
+    setTooltip(null);
+  }, []);
 
   // Get data and calculate statistics when selected factor changes
   useEffect(() => {
@@ -234,24 +305,39 @@ const FactorAnalysis = () => {
   }, [selectedFactor, factorMap])
   
   // Custom tooltip for scatter plot
-  const ScatterTooltip = ({ node }) => (
-    <div
-      className="bg-gray-800 text-white p-2 text-xs rounded shadow-lg"
-      style={{ maxWidth: '200px' }}
-    >
-      <div className="font-bold">{node.data.country}</div>
-      <div>{node.data.continent} ({node.data.year})</div>
-      <div className="flex justify-between mt-1">
-        <span>{selectedFactor}:</span> 
-        <span className="font-medium">{node.data.x.toFixed(2)}</span>
-      </div>
-      <div className="flex justify-between">
-        <span>Happiness Score:</span> 
-        <span className="font-medium">{node.data.y.toFixed(2)}</span>
-      </div>
-    </div>
-  )
-  
+  const handleTooltip = ({ node }) => {
+    setTooltip({
+      content: (
+        <>
+          <div className="font-bold text-sm mb-1">{node.data.country}</div>
+          <div>{node.data.continent} ({node.data.year})</div>
+          <div className="flex justify-between mt-2 text-xs">
+            <span>{selectedFactor}:</span> 
+            <span className="font-medium">{node.data.x.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-xs">
+            <span>Happiness Score:</span> 
+            <span className="font-medium">{node.data.y.toFixed(2)}</span>
+          </div>
+          {node.data.population && (
+            <div className="flex justify-between text-xs">
+              <span>Population:</span> 
+              <span className="font-medium">{(node.data.population / 1000).toFixed(1)} M</span>
+            </div>
+          )}
+          <div className="mt-2 pt-1 border-t border-gray-700 text-xs text-gray-300">
+            Bubble size represents population
+          </div>
+        </>
+      ),
+      x: node.x,
+      y: node.y,
+      data: node.data
+    });
+    
+    return null; // Return null to prevent the default tooltip
+  };
+
   // Prepare regional data for bar chart
   const getRegionalBarData = useCallback(() => {
     return factorRegionalData.map(d => ({
@@ -582,130 +668,118 @@ const FactorAnalysis = () => {
             <h3 className="text-xl font-semibold mb-4 text-gray-800">
               Correlation with Happiness Score
             </h3>
-            <div className="bg-gray-100 rounded-md h-80 mb-4 relative overflow-hidden">
+            <div 
+              ref={chartContainerRef}
+              className="bg-gray-100 rounded-md h-80 mb-4 relative overflow-hidden"
+              onMouseLeave={handleMouseLeave}
+            >
               {isLoading ? (
                 <LoadingPlaceholder />
               ) : (
-                <ResponsiveScatterPlot
-                  data={getScatterPlotData()}
-                  margin={{ top: 20, right: 120, bottom: 50, left: 60 }}
-                  xScale={{ type: 'linear', min: 'auto', max: 'auto' }}
-                  yScale={{ type: 'linear', min: 'auto', max: 'auto' }}
-                  blendMode="multiply"
-                  axisTop={null}
-                  axisRight={null}
-                  axisBottom={{
-                    tickSize: 5,
-                    tickPadding: 5,
-                    tickRotation: 0,
-                    legend: selectedFactor,
-                    legendPosition: 'middle',
-                    legendOffset: 40,
-                    tickLine: { stroke: '#dddddd' }
-                  }}
-                  axisLeft={{
-                    tickSize: 5,
-                    tickPadding: 5,
-                    tickRotation: 0,
-                    legend: 'Happiness Score',
-                    legendPosition: 'middle',
-                    legendOffset: -50,
-                    tickLine: { stroke: '#dddddd' }
-                  }}
-                  colors={{ scheme: 'category10' }}
-                  nodeSize={({ data }) => data.size}
-                  nodeBorderWidth={0.5}
-                  nodeBorderColor={{ from: 'color', modifiers: [['darker', 0.3]] }}
-                  nodeOpacity={0.3}
-                  enableGridX={true}
-                  enableGridY={true}
-                  gridXValues={5}
-                  gridYValues={5}
-                  gridOpacity={0.2}
-                  isInteractive={true}
-                  useMesh={true}
-                  animate={true}
-                  motionConfig="gentle"
-                  legends={[
-                    {
-                      anchor: 'top-right',
-                      direction: 'column',
-                      justify: false,
-                      translateX: 100,
-                      translateY: 0,
-                      itemsSpacing: 5,
-                      itemDirection: 'left-to-right',
-                      itemWidth: 100,
-                      itemHeight: 12,
-                      itemOpacity: 0.8,
-                      symbolSize: 10,
-                      symbolShape: 'circle',
-                      effects: [
-                        {
-                          on: 'hover',
-                          style: {
-                            itemOpacity: 1,
-                            symbolSize: 12
+                <>
+                  <ResponsiveScatterPlot
+                    data={getScatterPlotData()}
+                    margin={{ top: 20, right: 120, bottom: 50, left: 60 }}
+                    xScale={{ type: 'linear', min: 'auto', max: 'auto' }}
+                    yScale={{ type: 'linear', min: 'auto', max: 'auto' }}
+                    blendMode="multiply"
+                    axisTop={null}
+                    axisRight={null}
+                    axisBottom={{
+                      tickSize: 5,
+                      tickPadding: 5,
+                      tickRotation: 0,
+                      legend: selectedFactor,
+                      legendPosition: 'middle',
+                      legendOffset: 40,
+                      tickLine: { stroke: '#dddddd' }
+                    }}
+                    axisLeft={{
+                      tickSize: 5,
+                      tickPadding: 5,
+                      tickRotation: 0,
+                      legend: 'Happiness Score',
+                      legendPosition: 'middle',
+                      legendOffset: -50,
+                      tickLine: { stroke: '#dddddd' }
+                    }}
+                    colors={{ scheme: 'category10' }}
+                    nodeSize={({ data }) => data.size}
+                    nodeBorderWidth={0.5}
+                    nodeBorderColor={{ from: 'color', modifiers: [['darker', 0.3]] }}
+                    nodeOpacity={0.3}
+                    enableGridX={true}
+                    enableGridY={true}
+                    gridXValues={5}
+                    gridYValues={5}
+                    gridOpacity={0.2}
+                    isInteractive={true}
+                    useMesh={true}
+                    animate={true}
+                    motionConfig="gentle"
+                    tooltip={handleTooltip}
+                    legends={[
+                      {
+                        anchor: 'top-right',
+                        direction: 'column',
+                        justify: false,
+                        translateX: 100,
+                        translateY: 0,
+                        itemsSpacing: 5,
+                        itemDirection: 'left-to-right',
+                        itemWidth: 100,
+                        itemHeight: 12,
+                        itemOpacity: 0.8,
+                        symbolSize: 10,
+                        symbolShape: 'circle',
+                        effects: [
+                          {
+                            on: 'hover',
+                            style: {
+                              itemOpacity: 1,
+                              symbolSize: 12
+                            }
+                          }
+                        ]
+                      }
+                    ]}
+                    theme={{
+                      tooltip: {
+                        container: {
+                          background: 'transparent',
+                          boxShadow: 'none',
+                          padding: 0
+                        }
+                      },
+                      axis: {
+                        legend: {
+                          text: {
+                            fontSize: 12,
+                            fontWeight: 'bold',
+                            fill: '#555555'
                           }
                         }
-                      ]
-                    }
-                  ]}
-                  tooltip={({ node }) => (
-                    <div className="bg-gray-800 text-white p-3 text-xs rounded-md shadow-xl"
-                        style={{
-                          position: 'relative',
-                          transform: 'translate(-50%, -100%)',
-                          maxWidth: '250px',
-                          zIndex: 10
-                        }}>
-                      <div className="font-bold text-sm mb-1">{node.data.country}</div>
-                      <div>{node.data.continent} ({node.data.year})</div>
-                      <div className="flex justify-between mt-2 text-xs">
-                        <span>{selectedFactor}:</span> 
-                        <span className="font-medium">{node.data.x.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between text-xs">
-                        <span>Happiness Score:</span> 
-                        <span className="font-medium">{node.data.y.toFixed(2)}</span>
-                      </div>
-                      {node.data.population && (
-                        <div className="flex justify-between text-xs">
-                          <span>Population:</span> 
-                          <span className="font-medium">{(node.data.population / 1000).toFixed(1)} M</span>
-                        </div>
-                      )}
-                      <div className="mt-2 pt-1 border-t border-gray-700 text-xs text-gray-300">
-                        Bubble size represents population
-                      </div>
-                    </div>
-                  )}
-                  theme={{
-                    tooltip: {
-                      container: {
-                        background: 'transparent',
-                        boxShadow: 'none',
-                        padding: 0
-                      }
-                    },
-                    axis: {
-                      legend: {
-                        text: {
-                          fontSize: 12,
-                          fontWeight: 'bold',
-                          fill: '#555555'
+                      },
+                      grid: {
+                        line: {
+                          stroke: '#dddddd',
+                          strokeWidth: 1
                         }
                       }
-                    },
-                    grid: {
-                      line: {
-                        stroke: '#dddddd',
-                        strokeWidth: 1
-                      }
-                    }
-                  }}
-                  layers={["grid", "axes", "nodes", "markers", "mesh", "legends", "annotations"]}
-                />
+                    }}
+                    layers={["grid", "axes", "nodes", "markers", "mesh", "legends", "annotations"]}
+                  />
+                  {/* Render the global tooltip */}
+                  {tooltip && (
+                    <GlobalTooltip
+                      content={tooltip.content}
+                      x={tooltip.x-50}
+                      y={tooltip.y+25}
+                      width={chartContainerRef.current?.offsetWidth}
+                      height={chartContainerRef.current?.offsetHeight}
+                    />
+                  )}
+                </>
               )}
             </div>
             <p className="text-gray-600">
