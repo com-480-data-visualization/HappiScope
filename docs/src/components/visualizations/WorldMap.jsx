@@ -121,6 +121,11 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
     setPosition(position);
   };
 
+  // Handle resetting the map view to default
+  const handleResetView = () => {
+    setPosition({ coordinates: [10, 20], zoom: 1.2 }); // Reset to initial values
+  };
+
   // Find country data using multiple matching strategies
   const findCountryData = (geo) => {
     if (!geo.properties) return null;
@@ -163,22 +168,58 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
   const handleMouseEnter = (geo, countryData, e) => {
     const { clientX, clientY } = e;
     
+    // Get the map container's position and dimensions
+    const rect = e.currentTarget.getBoundingClientRect();
+    
+    // Calculate position relative to the map container
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    
+    // Prepare tooltip content
+    let content = '';
     if (countryData) {
-      setTooltipContent(`
+      content = `
         <strong>${countryData.country}</strong><br />
         ${metric === 'score' ? 'Happiness Score' : metric.replace(/_/g, ' ')}: ${countryData[metric]?.toFixed(2) || 'No data'}
-      `);
-      setTooltipPosition({ x: clientX, y: clientY });
-      setShowTooltip(true);
+      `;
     } else if (geo.properties && geo.properties.name) {
-      // Even when we don't have data, show the country name
-      setTooltipContent(`
+      content = `
         <strong>${geo.properties.name}</strong><br />
         No data available
-      `);
-      setTooltipPosition({ x: clientX, y: clientY });
-      setShowTooltip(true);
+      `;
+    } else {
+      return; // No tooltip if no valid data
     }
+    
+    setTooltipContent(content);
+    
+    // Calculate tooltip dimensions (estimating if not rendered yet)
+    const tooltipWidth = 150; // minWidth from style
+    const tooltipHeight = 70; // estimated height
+    
+    // Calculate adjusted position to keep tooltip within map boundaries
+    let adjustedX = x + 10; // Default: 10px to the right of cursor
+    let adjustedY = y - 40; // Default: 40px above cursor
+    
+    // Adjust horizontally if too close to right edge
+    if (adjustedX + tooltipWidth > rect.width) {
+      adjustedX = x - tooltipWidth - 10; // Place to the left of cursor
+    }
+    
+    // Adjust vertically if too close to top or bottom edge
+    if (adjustedY < 0) {
+      adjustedY = y + 20; // Place below cursor
+    } else if (adjustedY + tooltipHeight > rect.height) {
+      adjustedY = rect.height - tooltipHeight - 5; // Keep within bottom boundary
+    }
+    
+    // Set tooltip to appear at adjusted position
+    setTooltipPosition({ 
+      x: adjustedX,
+      y: adjustedY
+    });
+    
+    setShowTooltip(true);
   };
 
   const handleMouseLeave = () => {
@@ -192,15 +233,38 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
       // Get the current mouse position from the event
       const { clientX, clientY } = e;
       
-      // Get the bounds of the map container to prevent tooltip from going off-screen
-      const mapContainer = e.currentTarget.getBoundingClientRect();
+      // Get the map container's position and dimensions
+      const rect = e.currentTarget.getBoundingClientRect();
       
-      // Calculate tooltip position with offset for better visibility
-      // Ensure tooltip stays within the map container bounds
-      const x = Math.min(Math.max(clientX, mapContainer.left + 100), mapContainer.right - 100);
-      const y = Math.min(Math.max(clientY - 10, mapContainer.top + 50), mapContainer.bottom - 20);
+      // Calculate position relative to the map container
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
       
-      setTooltipPosition({ x, y });
+      // Calculate tooltip dimensions (estimating if not rendered yet)
+      const tooltipWidth = 150; // minWidth from style
+      const tooltipHeight = 70; // estimated height
+      
+      // Calculate adjusted position to keep tooltip within map boundaries
+      let adjustedX = x + 10; // Default: 10px to the right of cursor
+      let adjustedY = y - 40; // Default: 40px above cursor
+      
+      // Adjust horizontally if too close to right edge
+      if (adjustedX + tooltipWidth > rect.width) {
+        adjustedX = x - tooltipWidth - 10; // Place to the left of cursor
+      }
+      
+      // Adjust vertically if too close to top or bottom edge
+      if (adjustedY < 0) {
+        adjustedY = y + 20; // Place below cursor
+      } else if (adjustedY + tooltipHeight > rect.height) {
+        adjustedY = rect.height - tooltipHeight - 5; // Keep within bottom boundary
+      }
+      
+      // Set tooltip to appear at adjusted position
+      setTooltipPosition({ 
+        x: adjustedX,
+        y: adjustedY
+      });
     }
   };
 
@@ -264,17 +328,25 @@ const WorldMap = memo(({ year = 2024, metric = 'score', setSelectedCountry }) =>
             <path fillRule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clipRule="evenodd" />
           </svg>
         </button>
+        <button
+          onClick={handleResetView}
+          className="p-2 rounded-full bg-white shadow hover:bg-gray-100 focus:outline-none"
+          title="Reset view"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+          </svg>
+        </button>
       </div>
 
       {/* Tooltip with improved appearance and positioning */}
       {showTooltip && (
         <div
-          className="absolute z-50 bg-white/95 backdrop-blur-sm shadow-lg rounded-md px-4 py-2.5 text-sm pointer-events-none transform -translate-x-1/2 border border-gray-200"
+          className="absolute z-50 bg-white/95 backdrop-blur-sm shadow-lg rounded-md px-4 py-2.5 text-sm pointer-events-none border border-gray-200"
           style={{
-            left: tooltipPosition.x,
-            top: tooltipPosition.y - 20,
+            left: `${tooltipPosition.x}px`,
+            top: `${tooltipPosition.y}px`,
             minWidth: '150px',
-            transition: 'left 0.05s, top 0.05s'
           }}
           dangerouslySetInnerHTML={{ __html: tooltipContent }}
         />

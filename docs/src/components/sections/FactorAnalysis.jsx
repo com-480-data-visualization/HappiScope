@@ -204,6 +204,7 @@ const FactorAnalysis = () => {
       !isNaN(d[factorKey]) && 
       !isNaN(d.score) &&
       d.continent && d.continent !== null // Exclude data points with null continent
+      && d.year === 2024 // Only include data for the current year
     )
     
     // Create series by continent for better visualization
@@ -362,14 +363,7 @@ const FactorAnalysis = () => {
                   onClick={() => setSelectedFactor(factor)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:shadow-md ${
                     selectedFactor === factor
-                      ? `${
-                          factor === 'GDP per Capita' ? 'bg-indigo-500 text-white' :
-                          factor === 'Social Support' ? 'bg-teal-500 text-white' :
-                          factor === 'Life Expectancy' ? 'bg-green-500 text-white' :
-                          factor === 'Freedom' ? 'bg-lightGreen-500 text-white' :
-                          factor === 'Generosity' ? 'bg-amber-500 text-white' :
-                          'bg-red-500 text-white'
-                        } shadow-md ring-2 ring-white`
+                      ? `text-white shadow-md ring-2 ring-primary/20`
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -678,7 +672,7 @@ const FactorAnalysis = () => {
                       {node.data.population && (
                         <div className="flex justify-between text-xs">
                           <span>Population:</span> 
-                          <span className="font-medium">{(node.data.population / 1000000).toFixed(1)} M</span>
+                          <span className="font-medium">{(node.data.population / 1000).toFixed(1)} M</span>
                         </div>
                       )}
                       <div className="mt-2 pt-1 border-t border-gray-700 text-xs text-gray-300">
