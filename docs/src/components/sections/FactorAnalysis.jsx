@@ -305,38 +305,41 @@ const FactorAnalysis = () => {
   }, [selectedFactor, factorMap])
   
   // Custom tooltip for scatter plot
-  const handleTooltip = ({ node }) => {
-    setTooltip({
-      content: (
-        <>
-          <div className="font-bold text-sm mb-1">{node.data.country}</div>
-          <div>{node.data.continent} ({node.data.year})</div>
-          <div className="flex justify-between mt-2 text-xs">
-            <span>{selectedFactor}:</span> 
-            <span className="font-medium">{node.data.x.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between text-xs">
-            <span>Happiness Score:</span> 
-            <span className="font-medium">{node.data.y.toFixed(2)}</span>
-          </div>
-          {node.data.population && (
-            <div className="flex justify-between text-xs">
-              <span>Population:</span> 
-              <span className="font-medium">{(node.data.population / 1000).toFixed(1)} M</span>
+  const handleTooltip = useCallback(({ node }) => {
+    // Use requestAnimationFrame to defer the state update until after rendering
+    requestAnimationFrame(() => {
+      setTooltip({
+        content: (
+          <>
+            <div className="font-bold text-sm mb-1">{node.data.country}</div>
+            <div>{node.data.continent} ({node.data.year})</div>
+            <div className="flex justify-between mt-2 text-xs">
+              <span>{selectedFactor}:</span> 
+              <span className="font-medium">{node.data.x.toFixed(2)}</span>
             </div>
-          )}
-          <div className="mt-2 pt-1 border-t border-gray-700 text-xs text-gray-300">
-            Bubble size represents population
-          </div>
-        </>
-      ),
-      x: node.x,
-      y: node.y,
-      data: node.data
+            <div className="flex justify-between text-xs">
+              <span>Happiness Score:</span> 
+              <span className="font-medium">{node.data.y.toFixed(2)}</span>
+            </div>
+            {node.data.population && (
+              <div className="flex justify-between text-xs">
+                <span>Population:</span> 
+                <span className="font-medium">{(node.data.population / 1000).toFixed(1)} M</span>
+              </div>
+            )}
+            <div className="mt-2 pt-1 border-t border-gray-700 text-xs text-gray-300">
+              Bubble size represents population
+            </div>
+          </>
+        ),
+        x: node.x,
+        y: node.y,
+        data: node.data
+      });
     });
     
     return null; // Return null to prevent the default tooltip
-  };
+  }, [selectedFactor]); // Add dependencies that the tooltip content uses
 
   // Prepare regional data for bar chart
   const getRegionalBarData = useCallback(() => {
