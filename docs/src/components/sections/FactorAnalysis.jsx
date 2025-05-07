@@ -1,14 +1,15 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { scaleLinear } from 'd3-scale'
+import React from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { scaleLinear } from "d3-scale";
 import ReactDOM from "react-dom";
 // Import from the core packages to ensure proper module loading
-import { ResponsiveScatterPlot } from '@nivo/scatterplot'
-import { ResponsiveBar } from '@nivo/bar'
-import { ResponsiveLine } from '@nivo/line'
-import correlationsData from '../../data/correlations.json'
-import happinessData from '../../data/happiness_data.json'
-import summaryByContinent from '../../data/summary_by_continent.json'
+import { ResponsiveScatterPlot } from "@nivo/scatterplot";
+import { ResponsiveBar } from "@nivo/bar";
+import { ResponsiveLine } from "@nivo/line";
+import correlationsData from "../../data/correlations.json";
+import happinessData from "../../data/happiness_data.json";
+import summaryByContinent from "../../data/summary_by_continent.json";
 
 // Global tooltip component that positions relative to viewport
 const GlobalTooltip = ({ content, x, y, width, height }) => {
@@ -18,41 +19,41 @@ const GlobalTooltip = ({ content, x, y, width, height }) => {
   // Calculate tooltip position on mount and when coordinates change
   useEffect(() => {
     if (!tooltipRef.current) return;
-    
+
     const tooltipWidth = tooltipRef.current.offsetWidth;
     const tooltipHeight = tooltipRef.current.offsetHeight;
-    
+
     // Get viewport dimensions
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    
+
     // Convert container-relative coordinates to viewport coordinates
     const rect = tooltipRef.current.parentElement.getBoundingClientRect();
     const absX = rect.left + x;
     const absY = rect.top + y;
-    
+
     // Initial position (centered horizontally above point)
-    let posX = absX - (tooltipWidth / 2);
+    let posX = absX - tooltipWidth / 2;
     let posY = absY - tooltipHeight - 10; // Default: above with padding
-    
+
     // Adjust if too close to the right edge
     if (posX + tooltipWidth > viewportWidth) {
       posX = viewportWidth - tooltipWidth - 10;
     }
-    
+
     // Adjust if too close to the left edge
     if (posX < 10) {
       posX = 10;
     }
-    
+
     // Flip to below if too close to the top edge
     if (posY < 10) {
       posY = absY + 20; // Below with padding
     }
-    
+
     setPosition({
       left: posX,
-      top: posY
+      top: posY,
     });
   }, [x, y, width, height, content]);
 
@@ -63,83 +64,12 @@ const GlobalTooltip = ({ content, x, y, width, height }) => {
       style={{
         left: position.left,
         top: position.top,
-        maxWidth: '250px',
-        pointerEvents: 'none'
+        maxWidth: "250px",
+        pointerEvents: "none",
       }}
     >
       {content}
     </div>
-  );
-};
-
-// Global tooltip specifically for the time trend chart
-const TimeTooltipPortal = ({ content, position }) => {
-  const portalRef = useRef(null);
-  const [portalNode, setPortalNode] = useState(null);
-  
-  // Create a portal container on mount
-  useEffect(() => {
-    if (!portalNode) {
-      const node = document.createElement('div');
-      node.style.position = 'fixed';
-      node.style.zIndex = 9999;
-      node.style.pointerEvents = 'none';
-      document.body.appendChild(node);
-      setPortalNode(node);
-      
-      return () => {
-        document.body.removeChild(node);
-      };
-    }
-  }, [portalNode]);
-  
-  // Update portal position when content or position changes
-  useEffect(() => {
-    if (portalNode && portalRef.current && position) {
-      const tooltipRect = portalRef.current.getBoundingClientRect();
-      const tooltipWidth = tooltipRect.width;
-      const tooltipHeight = tooltipRect.height;
-      
-      // Viewport boundaries
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      
-      // Convert chart-relative coordinates to viewport coordinates
-      let posX = position.x - (tooltipWidth / 2);
-      let posY = position.y - tooltipHeight - 10;
-      
-      // Ensure tooltip stays within viewport bounds
-      if (posX + tooltipWidth > viewportWidth) {
-        posX = viewportWidth - tooltipWidth - 10;
-      }
-      if (posX < 10) {
-        posX = 10;
-      }
-      if (posY < 10) {
-        posY = position.y + 20; // Position below the point instead
-      }
-      
-      // Apply position to portal
-      portalNode.style.left = `${posX}px`;
-      portalNode.style.top = `${posY}px`;
-    }
-  }, [portalNode, position, content]);
-  
-  if (!portalNode) return null;
-  
-  // Use createPortal to render the tooltip in our custom container
-  return ReactDOM.createPortal(
-    <div 
-      ref={portalRef}
-      className="bg-white/90 backdrop-blur-sm text-gray-800 p-4 text-xs rounded-md shadow-xl border border-gray-200"
-      style={{ 
-        maxWidth: '240px',
-        backdropFilter: 'blur(8px)'
-      }}
-    >
-      {content}
-    </div>,
-    portalNode
   );
 };
 
@@ -237,7 +167,7 @@ const FactorAnalysis = () => {
 
           return {
             continent: continent,
-            value: avg,
+            value: parseFloat(avg.toFixed(2)), // Ensure consistent decimal places
           };
         })
         .filter((d) => d.value > 0);
@@ -461,7 +391,7 @@ const FactorAnalysis = () => {
                 <div className="flex justify-between text-xs">
                   <span>Population:</span>
                   <span className="font-medium">
-                    {(node.data.population / 1000).toFixed(1)} M
+                    {(node.data.population / 1000).toFixed(2)} M
                   </span>
                 </div>
               )}
@@ -485,7 +415,7 @@ const FactorAnalysis = () => {
   const getRegionalBarData = useCallback(() => {
     return factorRegionalData.map((d) => ({
       continent: d.continent,
-      value: d.value,
+      value: parseFloat(d.value.toFixed(2)), // Ensure consistent decimal places
       color: getColorScale(
         0,
         Math.max(...factorRegionalData.map((r) => r.value))
@@ -573,40 +503,45 @@ const FactorAnalysis = () => {
         (a, b) => b.data.y - a.data.y
       );
 
-      // Get mouse position for portal tooltip
+      // Format the continent name by removing any ".X" suffix
+      const formatContinentName = (name) => {
+        return name ? name.replace(/\.\d+$/, "") : "";
+      };
+
+      // Get the chart container dimensions
       const chartRect = document
         .getElementById("time-trend-chart")
         ?.getBoundingClientRect();
       if (!chartRect) return null;
 
-      const position = {
-        x: chartRect.left + slice.points[0].x + chartRect.width * 0.05, // Add offset to align with crosshair
-        y: chartRect.top + slice.points[0].y,
-      };
+      // Calculate position for tooltip
+      const tooltipX = chartRect.left + slice.points[0].x;
+      const tooltipY = chartRect.top + slice.points[0].y;
 
+      // Create tooltip content
       const tooltipContent = (
         <>
-          <div className="text-center font-bold border-b border-gray-200 pb-2 mb-3 text-sm">
-            <span className="text-blue-600">{selectedFactor}</span> in{" "}
-            <span className="text-yellow-600">{year}</span>
+          <div className="text-center font-bold border-b border-gray-700 pb-2 mb-3 text-sm text-gray-100">
+            <span className="text-blue-400">{selectedFactor}</span> in{" "}
+            <span className="text-yellow-400">{year}</span>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {sortedPoints.map((point) => (
               <div
                 key={point.id}
-                className="flex items-center justify-between group hover:bg-gray-100 px-1.5 py-0.5 rounded-sm transition-colors"
+                className="flex items-center justify-between group hover:bg-gray-700 px-1.5 py-0.5 rounded-sm transition-colors"
               >
                 <div className="flex items-center">
                   <span
-                    className="inline-block w-3 h-3 rounded-full mr-2 ring-1 ring-gray-300"
+                    className="inline-block w-3 h-3 rounded-full mr-2 ring-1 ring-gray-500"
                     style={{ backgroundColor: point.serieColor }}
                   ></span>
-                  <span className="font-medium text-gray-700">
-                    {point.serieId}:
+                  <span className="font-medium text-gray-300">
+                    {formatContinentName(point.serieId || point.id)}:
                   </span>
                 </div>
-                <span className="font-semibold text-right text-gray-900">
+                <span className="font-semibold text-right text-gray-100">
                   {point.data.y.toFixed(2)}
                 </span>
               </div>
@@ -614,13 +549,17 @@ const FactorAnalysis = () => {
           </div>
 
           {yearData.global && (
-            <div className="mt-4 pt-3 border-t border-gray-200">
-              <div className="text-[10px] text-center text-gray-500 mb-2 font-medium uppercase tracking-wider">
+            <div className="mt-3 pt-3 border-t border-gray-700">
+              <div className="text-[10px] text-center text-gray-400 mb-2 font-medium uppercase tracking-wider">
                 Comparison to Global Average
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {sortedPoints
-                  .filter((point) => point.serieId !== "Global")
+                  .filter(
+                    (point) =>
+                      formatContinentName(point.serieId || point.id) !==
+                      "Global"
+                  )
                   .map((point) => {
                     const diff = point.data.y - yearData.global;
                     const percentDiff = (diff / yearData.global) * 100;
@@ -628,41 +567,41 @@ const FactorAnalysis = () => {
                     return (
                       <div
                         key={`diff-${point.id}`}
-                        className="flex items-center justify-between group hover:bg-gray-100 px-1.5 py-0.5 rounded-sm transition-colors"
+                        className="flex items-center justify-between group hover:bg-gray-700 px-1.5 py-0.5 rounded-sm transition-colors"
                       >
                         <div className="flex items-center">
                           <span
-                            className="inline-block w-2.5 h-2.5 rounded-full mr-1.5 ring-1 ring-gray-300"
+                            className="inline-block w-2.5 h-2.5 rounded-full mr-1.5 ring-1 ring-gray-500"
                             style={{ backgroundColor: point.serieColor }}
                           ></span>
-                          <span className="text-gray-600 text-[11px]">
-                            {point.serieId}
+                          <span className="text-gray-300 text-[11px]">
+                            {formatContinentName(point.serieId || point.id)}
                           </span>
                         </div>
                         <div className="flex items-center">
                           <span
                             className={`font-medium ${
                               diff > 0
-                                ? "text-green-600"
+                                ? "text-green-400"
                                 : diff < 0
-                                ? "text-red-600"
-                                : "text-gray-600"
+                                ? "text-red-400"
+                                : "text-gray-300"
                             }`}
                           >
                             {diff > 0 ? "+" : ""}
                             {diff.toFixed(2)}
                           </span>
                           <span
-                            className={`ml-1.5 text-[10px] opacity-80 ${
+                            className={`ml-1.5 text-[10px] opacity-90 ${
                               diff > 0
-                                ? "text-green-600"
+                                ? "text-green-400"
                                 : diff < 0
-                                ? "text-red-600"
-                                : "text-gray-600"
+                                ? "text-red-400"
+                                : "text-gray-400"
                             }`}
                           >
                             ({diff > 0 ? "+" : ""}
-                            {percentDiff.toFixed(1)}%)
+                            {percentDiff.toFixed(2)}%)
                           </span>
                         </div>
                       </div>
@@ -674,9 +613,23 @@ const FactorAnalysis = () => {
         </>
       );
 
-      return <TimeTooltipPortal content={tooltipContent} position={position} />;
+      // Using React's useEffect to update the tooltip state after render
+      React.useEffect(() => {
+        // Use the GlobalTooltip through setTooltip state updater
+        setTooltip({
+          content: tooltipContent,
+          x: tooltipX,
+          y: tooltipY,
+        });
+
+        // Clear the tooltip when component unmounts
+        return () => setTooltip(null);
+      }, [tooltipContent, tooltipX, tooltipY]);
+
+      // Return an empty fragment instead of null
+      return <></>;
     },
-    [factorTimeData, selectedFactor]
+    [factorTimeData, selectedFactor, setTooltip]
   );
 
   if (error) {
@@ -950,7 +903,7 @@ const FactorAnalysis = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77-1.333.192 3 1.732 3z"
                       />
                     </svg>
                   </div>
@@ -1150,7 +1103,7 @@ const FactorAnalysis = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77-1.333.192 3 1.732 3z"
                     />
                   </svg>
                 </div>
@@ -1384,7 +1337,7 @@ const FactorAnalysis = () => {
                     <div className="bg-gray-800 text-white p-2 text-xs rounded shadow-lg">
                       <div className="font-bold">{indexValue}</div>
                       <div className="flex justify-between mt-1">
-                        <span>{selectedFactor}:</span>
+                        <span>{selectedFactor}:&nbsp;</span>
                         <span className="font-medium">{value.toFixed(2)}</span>
                       </div>
                     </div>
@@ -1517,7 +1470,8 @@ const FactorAnalysis = () => {
                       ],
                     },
                   ]}
-                  tooltip={TimeTooltip}
+                  enableSlices="x"
+                  sliceTooltip={TimeTooltip}
                   theme={{
                     tooltip: {
                       container: {
@@ -1550,7 +1504,6 @@ const FactorAnalysis = () => {
                       },
                     },
                   }}
-                  enableSlices="x"
                 />
               )}
             </div>
@@ -1675,6 +1628,7 @@ const FactorAnalysis = () => {
                     legendPosition: "middle",
                     legendOffset: 32,
                     tickLine: { stroke: "#dddddd" },
+                    // format: (value) => `${value.toFixed(0)}%`,
                   }}
                   axisLeft={{
                     tickSize: 5,
@@ -1688,18 +1642,19 @@ const FactorAnalysis = () => {
                   enableGridX={true}
                   gridXValues={5}
                   gridOpacity={0.15}
+                  enableLabel={true} // Ensure labels are enabled
+                  label={(d) => `${Number(d.value).toFixed(2)}`} // Explicitly format the label text
                   labelSkipWidth={12}
                   labelSkipHeight={12}
                   labelTextColor="#ffffff"
-                  labelFormat={(value) => `${value.toFixed(1)}%`}
                   animate={true}
                   motionConfig="gentle"
                   tooltip={({ value, indexValue }) => (
                     <div className="bg-gray-800 text-white p-2 text-xs rounded shadow-lg">
                       <div className="font-bold">{indexValue}</div>
                       <div className="flex justify-between mt-1">
-                        <span>Relative Importance:</span>
-                        <span className="font-medium">{value.toFixed(1)}%</span>
+                        <span>Relative Importance:&nbsp;</span>
+                        <span className="font-medium">{value.toFixed(2)}%</span>
                       </div>
                     </div>
                   )}
@@ -2325,6 +2280,6 @@ const FactorAnalysis = () => {
       </section>
     </div>
   );
-}
+};
 
-export default FactorAnalysis
+export default FactorAnalysis;
