@@ -20,22 +20,6 @@ function About() {
             Exploring the multidimensional nature of global happiness through
             sophisticated visual analysis.
           </p>
-
-          <div className="flex justify-center mb-6">
-            <motion.img
-              src={happiscope}
-              alt="HappiScope Logo"
-              className="h-50 w-auto"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-                delay: 0.3,
-              }}
-            />
-          </div>
         </motion.div>
 
         {/* Project Overview Card */}
@@ -99,14 +83,29 @@ function About() {
                   Visualizing Global Well-being
                 </span>
               </h3>
+              <div className="flex justify-center mb-6">
+                <motion.img
+                  src={happiscope}
+                  alt="HappiScope Logo"
+                  className="h-50 w-auto rounded-full shadow-lg transition-transform duration-300"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20,
+                    delay: 0.3,
+                  }}
+                />
+              </div>
               <div className="space-y-4">
                 <p className="text-gray-600">
                   <span className="font-semibold text-text-color">
                     HappiScope
                   </span>{" "}
                   is an interactive visualization platform developed for the
-                  COM-480 Data Visualization course at{" "}
-                  <em>École Polytechnique Fédérale de Lausanne</em>
+                  COM-480 Data Visualization course at &nbsp;
+                  <em>École Polytechnique Fédérale de Lausanne</em>&nbsp;
                   (EPFL). Our mission is to transform complex happiness data
                   from the <strong>World Happiness Report</strong> and
                   supplementary datasets into intuitive visual insights that
@@ -471,22 +470,20 @@ function About() {
           className="card mb-12 max-w-5xl mx-auto bg-card shadow-lg rounded-lg p-8 transition-colors duration-200"
         >
           <div className="flex items-center mb-6">
-            <div className="bg-gradient-to-br from-primary/10 to-blue-500/10 p-3 rounded-full mr-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-primary"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8 text-primary mr-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
             <h2 className="text-2xl font-semibold text-text-color">
               <span className="border-b-2 border-primary pb-1">
                 Project Goals and Impact
@@ -645,59 +642,28 @@ function About() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="card mb-12 max-w-5xl mx-auto bg-card shadow-lg rounded-lg overflow-hidden transition-colors duration-200"
         >
-          <div className="flex flex-col md:flex-row">
-            <div className="bg-gradient-to-br from-blue-600 to-blue-200 py-6 px-8 text-white relative overflow-hidden">
-              {/* Abstract pattern */}
-              <div className="absolute inset-0 opacity-15">
-                <svg
-                  width="100%"
-                  height="100%"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <defs>
-                    <pattern
-                      id="teamGrid"
-                      width="20"
-                      height="20"
-                      patternUnits="userSpaceOnUse"
-                    >
-                      <path
-                        d="M 20 0 L 0 0 0 20"
-                        fill="none"
-                        stroke="white"
-                        strokeWidth="0.5"
-                      />
-                    </pattern>
-                  </defs>
-                  <rect width="100%" height="100%" fill="url(#teamGrid)" />
-                </svg>
-              </div>
-
-              <div className="flex items-center relative z-10">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 mr-3"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
-                <h2 className="text-2xl font-semibold">
-                  <span className="border-b-2 border-blue-400 pb-1">
-                    Our Team
-                  </span>
-                </h2>
-              </div>
-            </div>
-          </div>
-
           <div className="p-8">
+            <div className="flex items-center mb-6">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8 text-blue-600 mr-3"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+              <h2 className="text-2xl font-semibold text-gray-800">
+                <span className="border-b-2 border-blue-400 pb-1">
+                  Our Team
+                </span>
+              </h2>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center transition-transform duration-300 hover:-translate-y-1">
                 <div className="w-28 h-28 bg-blue-100 text-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -802,22 +768,20 @@ function About() {
           className="card mb-12 max-w-5xl mx-auto bg-card shadow-lg rounded-lg p-8"
         >
           <div className="flex items-center mb-6">
-            <div className="bg-indigo-100 p-3 rounded-full mr-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-indigo-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                />
-              </svg>
-            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8 text-indigo-600 mr-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              />
+            </svg>
             <h2 className="text-2xl font-semibold text-gray-800">
               <span className="border-b-2 border-indigo-400 pb-1">
                 Course Context
@@ -995,11 +959,11 @@ function About() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="card mb-12 max-w-5xl mx-auto bg-card shadow-lg rounded-lg overflow-hidden"
         >
-          <div className="bg-gradient-to-r from-gray-800 to-gray-900 py-6 px-8 text-white">
+          <div className="p-8">
             <div className="flex items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 mr-3"
+                className="h-8 w-8 text-gray-700 mr-3"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -1011,7 +975,7 @@ function About() {
                   d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
                 />
               </svg>
-              <h2 className="text-2xl font-semibold">
+              <h2 className="text-2xl font-semibold text-gray-800">
                 <span className="border-b-2 border-gray-400 pb-1">
                   Technical Implementation
                 </span>
@@ -1025,7 +989,7 @@ function About() {
               interactive and responsive user experience:
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-gray-50 p-6 rounded-lg border border-gray-100 shadow-sm">
                 <div className="flex items-center mb-4">
                   <div className="bg-blue-100 p-2 rounded-full mr-3">
@@ -1189,10 +1153,36 @@ function About() {
                       </p>
                     </div>
                   </li>
+                </ul>
+              </div>
+
+              <div className="bg-gray-50 p-6 rounded-lg border border-gray-100 shadow-sm">
+                <div className="flex items-center mb-4">
+                  <div className="bg-purple-100 p-2 rounded-full mr-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-purple-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="font-medium text-lg text-gray-800">
+                    User Experience
+                  </h3>
+                </div>
+                <ul className="space-y-3">
                   <li className="flex items-start">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5"
+                      className="h-5 w-5 text-purple-500 mr-2 flex-shrink-0 mt-0.5"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
@@ -1204,99 +1194,58 @@ function About() {
                     </svg>
                     <div>
                       <span className="font-medium text-gray-800">
-                        Three.js
+                        Framer Motion
                       </span>
                       <p className="text-gray-600 text-sm">
-                        3D data visualizations and globe representations
+                        Smooth animations and transitions
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-purple-500 mr-2 flex-shrink-0 mt-0.5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <div>
+                      <span className="font-medium text-gray-800">
+                        Responsive Design
+                      </span>
+                      <p className="text-gray-600 text-sm">
+                        Mobile-friendly and adaptive layouts
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-purple-500 mr-2 flex-shrink-0 mt-0.5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <div>
+                      <span className="font-medium text-gray-800">
+                        Interactive Elements
+                      </span>
+                      <p className="text-gray-600 text-sm">
+                        Tooltips, hover effects, and dynamic data filtering
                       </p>
                     </div>
                   </li>
                 </ul>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 p-6 rounded-lg border border-gray-100 shadow-sm">
-              <div className="flex items-center mb-4">
-                <div className="bg-purple-100 p-2 rounded-full mr-3">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-purple-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-medium text-lg text-gray-800">
-                  User Experience
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white p-3 rounded border border-gray-100 flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-purple-500 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <p className="text-gray-700 text-sm">
-                    Framer Motion animations
-                  </p>
-                </div>
-                <div className="bg-white p-3 rounded border border-gray-100 flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-purple-500 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <p className="text-gray-700 text-sm">Responsive design</p>
-                </div>
-                <div className="bg-white p-3 rounded border border-gray-100 flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-purple-500 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
-                    />
-                  </svg>
-                  <p className="text-gray-700 text-sm">Interactive elements</p>
-                </div>
               </div>
             </div>
 
@@ -1330,11 +1279,11 @@ function About() {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="card max-w-5xl mx-auto bg-card shadow-lg rounded-lg overflow-hidden"
         >
-          <div className="bg-gradient-to-r from-gray-100 to-gray-200 py-6 px-8 border-b">
-            <div className="flex items-center">
+          <div className="p-8">
+            <div className="flex items-center mb-6">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-gray-700 mr-3"
+                className="h-8 w-8 text-indigo-600 mr-3"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -1347,122 +1296,151 @@ function About() {
                 />
               </svg>
               <h2 className="text-2xl font-semibold text-gray-800">
-                <span className="border-b-2 border-gray-400 pb-1">
+                <span className="border-b-2 border-indigo-400 pb-1">
                   Acknowledgments
                 </span>
               </h2>
             </div>
-          </div>
 
-          <div className="p-8">
-            <div className="space-y-4 mb-8">
-              <div className="flex">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"
-                  />
-                </svg>
-                <p className="text-gray-600">
-                  We would like to thank{" "}
-                  <span className="font-medium text-gray-800">
-                    Professor Laurent Vuillon
-                  </span>{" "}
-                  and the teaching assistants of the{" "}
-                  <em>COM-480 Data Visualization</em> course for their guidance
-                  and feedback throughout the development of this project.
-                </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-xl border border-indigo-100 shadow-sm transition-all duration-300 hover:shadow-md">
+                <div className="flex items-start">
+                  <div className="bg-indigo-100 p-3 rounded-full mr-4 flex-shrink-0">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-indigo-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-800 mb-2">Academic Support</h3>
+                    <p className="text-gray-600">
+                      We would like to thank{" "}
+                      <span className="font-medium text-indigo-700">
+                        Professor Laurent Vuillon
+                      </span>{" "}
+                      and the teaching assistants of the{" "}
+                      <em>COM-480 Data Visualization</em> course for their guidance
+                      and feedback throughout the development of this project.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="flex">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h.5A2.5 2.5 0 0020 5.5v-1.65M12 10a2 2 0 10-4 0 2 2 0 004 0zm9 0a2 2 0 10-4 0 2 2 0 004 0zm-9 0a2 2 0 10-4 0 2 2 0 004 0zm9 0a2 2 0 10-4 0 2 2 0 004 0z"
-                  />
-                </svg>
-                <p className="text-gray-600">
-                  We acknowledge the{" "}
-                  <a
-                    href="https://worldhappiness.report/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    World Happiness Report
-                  </a>{" "}
-                  and its contributors for their pioneering work in measuring
-                  and analyzing global happiness. The report is produced by the
-                  United Nations Sustainable Development Solutions Network with
-                  the support of the Ernesto Illy Foundation.
-                </p>
+
+              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-100 shadow-sm transition-all duration-300 hover:shadow-md">
+                <div className="flex items-start">
+                  <div className="bg-blue-100 p-3 rounded-full mr-4 flex-shrink-0">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-blue-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h.5A2.5 2.5 0 0020 5.5v-1.65M12 10a2 2 0 10-4 0 2 2 0 004 0zm9 0a2 2 0 10-4 0 2 2 0 004 0zm-9 0a2 2 0 10-4 0 2 2 0 004 0zm9 0a2 2 0 10-4 0 2 2 0 004 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-800 mb-2">Data Sources</h3>
+                    <p className="text-gray-600">
+                      We acknowledge the{" "}
+                      <a
+                        href="https://worldhappiness.report/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        World Happiness Report
+                      </a>{" "}
+                      and its contributors for their pioneering work in measuring
+                      and analyzing global happiness. The report is produced by the
+                      United Nations Sustainable Development Solutions Network with
+                      the support of the Ernesto Illy Foundation.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="flex">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1M19 20a2 2 0 002-2V8a2 2 0 00-2-2h-5a2 2 0 00-2 2v12a2 2 0 002 2h5z"
-                  />
-                </svg>
-                <p className="text-gray-600">
-                  We also thank the United Nations Development Programme, the
-                  World Bank, and other institutions for making their valuable
-                  datasets publicly available for research and educational
-                  purposes.
-                </p>
+
+              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-xl border border-purple-100 shadow-sm transition-all duration-300 hover:shadow-md">
+                <div className="flex items-start">
+                  <div className="bg-purple-100 p-3 rounded-full mr-4 flex-shrink-0">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-purple-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1M19 20a2 2 0 002-2V8a2 2 0 00-2-2h-5a2 2 0 00-2 2v12a2 2 0 002 2h5z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-800 mb-2">Institutions</h3>
+                    <p className="text-gray-600">
+                      We also thank the United Nations Development Programme, the
+                      World Bank, and other institutions for making their valuable
+                      datasets publicly available for research and educational
+                      purposes.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="flex">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"
-                  />
-                </svg>
-                <p className="text-gray-600">
-                  Special thanks to the open-source communities behind React,
-                  D3.js, Nivo, React Simple Maps, Framer Motion, Tailwind CSS,
-                  and other libraries that made this project possible.
-                </p>
+
+              <div className="bg-gradient-to-br from-green-50 to-teal-50 p-6 rounded-xl border border-green-100 shadow-sm transition-all duration-300 hover:shadow-md">
+                <div className="flex items-start">
+                  <div className="bg-green-100 p-3 rounded-full mr-4 flex-shrink-0">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-green-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-800 mb-2">Open Source Community</h3>
+                    <p className="text-gray-600">
+                      Special thanks to the open-source communities behind React,
+                      D3.js, Nivo, React Simple Maps, Framer Motion, Tailwind CSS,
+                      and other libraries that made this project possible.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex space-y-2 flex-col">
+            <div className="flex flex-col md:flex-row gap-4 mt-8 justify-center">
               <a
                 href="https://github.com/com-480-data-visualization/HappiScope"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition duration-300 shadow-sm"
+                className="inline-flex items-center justify-center bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition duration-300 shadow-sm"
               >
                 <svg
                   className="w-5 h-5 mr-3"
@@ -1483,7 +1461,7 @@ function About() {
                 href="https://worldhappiness.report/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-300 shadow-sm"
+                className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-300 shadow-sm"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
