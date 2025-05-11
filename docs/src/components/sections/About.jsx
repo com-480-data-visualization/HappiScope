@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import happiscope from "../../assets/happiscope.svg";
 
 function About() {
   return (
@@ -15,25 +16,26 @@ function About() {
             About HappiScope
           </h1>
 
-          {/* <div className="flex justify-center mb-2">
-            <div className="w-24 h-1.5 bg-gradient-to-r from-primary to-blue-500 rounded-full"></div>
-          </div> */}
-
           <p className="text-gray-600 text-center mb-6 max-w-3xl mx-auto">
             Exploring the multidimensional nature of global happiness through
             sophisticated visual analysis.
           </p>
 
-          {/* <div className="flex justify-center">
-            <div className="flex space-x-2 bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-2 rounded-full shadow-sm">
-              <span className="text-sm font-medium text-gray-500">
-                World Happiness Report Data
-              </span>
-              <span className="text-sm font-medium text-primary">
-                2015-2024
-              </span>
-            </div>
-          </div> */}
+          <div className="flex justify-center mb-6">
+            <motion.img
+              src={happiscope}
+              alt="HappiScope Logo"
+              className="h-50 w-auto"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+                delay: 0.3,
+              }}
+            />
+          </div>
         </motion.div>
 
         {/* Project Overview Card */}
@@ -93,7 +95,9 @@ function About() {
 
             <div className="p-8 md:w-2/3">
               <h3 className="text-xl font-semibold text-text-color mb-4">
-                <span className="border-b-2 border-primary pb-1">Visualizing Global Well-being</span>
+                <span className="border-b-2 border-primary pb-1">
+                  Visualizing Global Well-being
+                </span>
               </h3>
               <div className="space-y-4">
                 <p className="text-gray-600">
@@ -101,12 +105,12 @@ function About() {
                     HappiScope
                   </span>{" "}
                   is an interactive visualization platform developed for the
-                  COM-480 Data Visualization course at <em>École Polytechnique Fédérale de Lausanne</em>
-                  (EPFL). Our mission is to
-                  transform complex happiness data from the <strong>World Happiness
-                  Report</strong> and supplementary datasets into intuitive visual
-                  insights that reveal patterns and relationships in global
-                  well-being.
+                  COM-480 Data Visualization course at{" "}
+                  <em>École Polytechnique Fédérale de Lausanne</em>
+                  (EPFL). Our mission is to transform complex happiness data
+                  from the <strong>World Happiness Report</strong> and
+                  supplementary datasets into intuitive visual insights that
+                  reveal patterns and relationships in global well-being.
                 </p>
                 <p className="text-gray-600">
                   In today's data-driven world, understanding the factors that
@@ -290,7 +294,9 @@ function About() {
 
             <div className="p-8 md:w-2/3">
               <h3 className="text-xl font-semibold text-text-color mb-4">
-                <span className="border-b-2 border-amber-500 pb-1">Understanding the Data Source</span>
+                <span className="border-b-2 border-amber-500 pb-1">
+                  Understanding the Data Source
+                </span>
               </h3>
               <div className="space-y-4">
                 <p className="text-gray-600">
@@ -304,23 +310,28 @@ function About() {
                   with the UN's <em>International Day of Happiness</em>.
                 </p>
                 <p className="text-gray-600">
-                  The report ranks <strong>156+ countries</strong> by their happiness levels
-                  using data from the Gallup World Poll. <span className="font-medium text-amber-700">Finland</span> has
-                  consistently ranked as the happiest country in the world for
-                  multiple consecutive years (2018-2021), followed by countries
-                  like Denmark, Switzerland, Iceland, and Norway.
+                  The report ranks <strong>156+ countries</strong> by their
+                  happiness levels using data from the Gallup World Poll.{" "}
+                  <span className="font-medium text-amber-700">Finland</span>{" "}
+                  has consistently ranked as the happiest country in the world
+                  for multiple consecutive years (2018-2021), followed by
+                  countries like Denmark, Switzerland, Iceland, and Norway.
                 </p>
               </div>
 
               <div className="mt-6 bg-amber-50 p-5 rounded-lg border-l-4 border-amber-500">
                 <h4 className="text-amber-800 font-medium mb-3">
-                  <span className="border-b-2 border-amber-400 pb-1">Happiness Measurement Methodology</span>
+                  <span className="border-b-2 border-amber-400 pb-1">
+                    Happiness Measurement Methodology
+                  </span>
                 </h4>
                 <p className="text-gray-700 mb-3">
                   The rankings are based on survey data where respondents rate
-                  their own lives on a scale from <span className="font-semibold">0 to 10</span>, with 10 representing
-                  the <em>best possible life</em> and 0 the <em>worst</em>. These ratings are
-                  correlated with various life factors including:
+                  their own lives on a scale from{" "}
+                  <span className="font-semibold">0 to 10</span>, with 10
+                  representing the <em>best possible life</em> and 0 the{" "}
+                  <em>worst</em>. These ratings are correlated with various life
+                  factors including:
                 </p>
                 <ul className="space-y-2 grid grid-cols-1 md:grid-cols-2 gap-x-4">
                   <li className="flex items-start">
@@ -477,7 +488,9 @@ function About() {
               </svg>
             </div>
             <h2 className="text-2xl font-semibold text-text-color">
-              <span className="border-b-2 border-primary pb-1">Project Goals and Impact</span>
+              <span className="border-b-2 border-primary pb-1">
+                Project Goals and Impact
+              </span>
             </h2>
           </div>
 
@@ -676,7 +689,9 @@ function About() {
                   />
                 </svg>
                 <h2 className="text-2xl font-semibold">
-                  <span className="border-b-2 border-blue-400 pb-1">Our Team</span>
+                  <span className="border-b-2 border-blue-400 pb-1">
+                    Our Team
+                  </span>
                 </h2>
               </div>
             </div>
@@ -804,7 +819,9 @@ function About() {
               </svg>
             </div>
             <h2 className="text-2xl font-semibold text-gray-800">
-              <span className="border-b-2 border-indigo-400 pb-1">Course Context</span>
+              <span className="border-b-2 border-indigo-400 pb-1">
+                Course Context
+              </span>
             </h2>
           </div>
 
@@ -995,7 +1012,9 @@ function About() {
                 />
               </svg>
               <h2 className="text-2xl font-semibold">
-                <span className="border-b-2 border-gray-400 pb-1">Technical Implementation</span>
+                <span className="border-b-2 border-gray-400 pb-1">
+                  Technical Implementation
+                </span>
               </h2>
             </div>
           </div>
@@ -1328,7 +1347,9 @@ function About() {
                 />
               </svg>
               <h2 className="text-2xl font-semibold text-gray-800">
-                <span className="border-b-2 border-gray-400 pb-1">Acknowledgments</span>
+                <span className="border-b-2 border-gray-400 pb-1">
+                  Acknowledgments
+                </span>
               </h2>
             </div>
           </div>
@@ -1351,10 +1372,13 @@ function About() {
                   />
                 </svg>
                 <p className="text-gray-600">
-                  We would like to thank <span className="font-medium text-gray-800">Professor Laurent Vuillon</span> and the
-                  teaching assistants of the <em>COM-480 Data Visualization</em> course
-                  for their guidance and feedback throughout the development of
-                  this project.
+                  We would like to thank{" "}
+                  <span className="font-medium text-gray-800">
+                    Professor Laurent Vuillon
+                  </span>{" "}
+                  and the teaching assistants of the{" "}
+                  <em>COM-480 Data Visualization</em> course for their guidance
+                  and feedback throughout the development of this project.
                 </p>
               </div>
               <div className="flex">
@@ -1454,15 +1478,26 @@ function About() {
                 </svg>
                 <span>View Project on GitHub</span>
               </a>
-              
+
               <a
                 href="https://worldhappiness.report/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition duration-300 shadow-sm"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-3"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                  />
                 </svg>
                 <span>Visit World Happiness Report</span>
               </a>
