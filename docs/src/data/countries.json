@@ -36,7 +36,7 @@
   },
   {
     "country": "Australia",
-    "continent": "Australia",
+    "continent": "Oceania",
     "country_code": "AUS",
     "score": 7.057,
     "hdi": 0.946
@@ -680,7 +680,7 @@
   },
   {
     "country": "New Zealand",
-    "continent": "Australia",
+    "continent": "Oceania",
     "country_code": "NZL",
     "score": 7.029,
     "hdi": 0.939

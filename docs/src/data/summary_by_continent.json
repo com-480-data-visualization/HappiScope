@@ -273,7 +273,7 @@
     "population": 4735999.0199999996
   },
   {
-    "continent": "Australia",
+    "continent": "Oceania",
     "year": 2015,
     "score": 7.299,
     "gdp_per_capita": 1.445,
@@ -286,7 +286,7 @@
     "population": 28562.031
   },
   {
-    "continent": "Australia",
+    "continent": "Oceania",
     "year": 2016,
     "score": 7.285,
     "gdp_per_capita": 1.292,
@@ -299,7 +299,7 @@
     "population": 29044.733
   },
   {
-    "continent": "Australia",
+    "continent": "Oceania",
     "year": 2017,
     "score": 7.2675,
     "gdp_per_capita": 1.3375,
@@ -312,7 +312,7 @@
     "population": 29543.79
   },
   {
-    "continent": "Australia",
+    "continent": "Oceania",
     "year": 2018,
     "score": 7.298,
     "gdp_per_capita": 1.304,
@@ -325,7 +325,7 @@
     "population": 30020.553
   },
   {
-    "continent": "Australia",
+    "continent": "Oceania",
     "year": 2019,
     "score": 7.3235,
     "gdp_per_capita": 1.4025,
@@ -338,7 +338,7 @@
     "population": 30472.117
   },
   {
-    "continent": "Australia",
+    "continent": "Oceania",
     "year": 2020,
     "score": 7.2615,
     "gdp_per_capita": 1.276,
@@ -351,7 +351,7 @@
     "population": 30813.686
   },
   {
-    "continent": "Australia",
+    "continent": "Oceania",
     "year": 2021,
     "score": 7.23,
     "gdp_per_capita": 1.4265,
@@ -364,7 +364,7 @@
     "population": 31064.114
   },
   {
-    "continent": "Australia",
+    "continent": "Oceania",
     "year": 2022,
     "score": 7.181,
     "gdp_per_capita": 1.876,
@@ -377,7 +377,7 @@
     "population": 31332.718
   },
   {
-    "continent": "Australia",
+    "continent": "Oceania",
     "year": 2023,
     "score": 7.109,
     "gdp_per_capita": 1.8705,
@@ -390,7 +390,7 @@
     "population": 31623.96
   },
   {
-    "continent": "Australia",
+    "continent": "Oceania",
     "year": 2024,
     "score": 7.043,
     "gdp_per_capita": 1.832,

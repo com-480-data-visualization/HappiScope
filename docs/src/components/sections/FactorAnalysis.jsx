@@ -468,7 +468,9 @@ const FactorAnalysis = () => {
           ? "North America"
           : key === "south_america"
           ? "South America"
-          : "Oceania",
+          : key === "oceania"
+          ? "Oceania"
+          : key,
       color: continentColors[key],
       data: factorTimeData.map((d) => ({
         x: d.year,
@@ -497,6 +499,17 @@ const FactorAnalysis = () => {
       // Find the year data in factorTimeData
       const yearData = factorTimeData.find((d) => d.year === year);
       if (!yearData) return null;
+
+      // Define continent colors for consistent color scheme - same as in getTimeLineData
+      const continentColors = {
+        Global: "#3B82F6", // Blue
+        Europe: "#10B981", // Green
+        Asia: "#8B5CF6", // Purple
+        Africa: "#F59E0B", // Amber
+        "North America": "#EC4899", // Pink
+        "South America": "#F97316", // Orange
+        Oceania: "#06B6D4", // Cyan
+      };
 
       // Sort points by value (descending) for better readability
       const sortedPoints = [...slice.points].sort(
@@ -527,25 +540,33 @@ const FactorAnalysis = () => {
           </div>
 
           <div className="space-y-1.5">
-            {sortedPoints.map((point) => (
-              <div
-                key={point.id}
-                className="flex items-center justify-between group hover:bg-gray-700 px-1.5 py-0.5 rounded-sm transition-colors"
-              >
-                <div className="flex items-center">
-                  <span
-                    className="inline-block w-3 h-3 rounded-full mr-2 ring-1 ring-gray-500"
-                    style={{ backgroundColor: point.serieColor }}
-                  ></span>
-                  <span className="font-medium text-gray-300">
-                    {formatContinentName(point.serieId || point.id)}:
+            {sortedPoints.map((point) => {
+              const continentName = formatContinentName(
+                point.serieId || point.id
+              );
+              const continentColor =
+                continentColors[continentName] || point.serieColor;
+
+              return (
+                <div
+                  key={point.id}
+                  className="flex items-center justify-between group hover:bg-gray-700 px-1.5 py-0.5 rounded-sm transition-colors"
+                >
+                  <div className="flex items-center">
+                    <span
+                      className="inline-block w-3 h-3 rounded-full mr-2 ring-1 ring-gray-500"
+                      style={{ backgroundColor: continentColor }}
+                    ></span>
+                    <span className="font-medium text-gray-300">
+                      {continentName}:
+                    </span>
+                  </div>
+                  <span className="font-semibold text-right text-gray-100">
+                    {point.data.y.toFixed(2)}
                   </span>
                 </div>
-                <span className="font-semibold text-right text-gray-100">
-                  {point.data.y.toFixed(2)}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {yearData.global && (
@@ -561,6 +582,11 @@ const FactorAnalysis = () => {
                       "Global"
                   )
                   .map((point) => {
+                    const continentName = formatContinentName(
+                      point.serieId || point.id
+                    );
+                    const continentColor =
+                      continentColors[continentName] || point.serieColor;
                     const diff = point.data.y - yearData.global;
                     const percentDiff = (diff / yearData.global) * 100;
 
@@ -572,10 +598,10 @@ const FactorAnalysis = () => {
                         <div className="flex items-center">
                           <span
                             className="inline-block w-2.5 h-2.5 rounded-full mr-1.5 ring-1 ring-gray-500"
-                            style={{ backgroundColor: point.serieColor }}
+                            style={{ backgroundColor: continentColor }}
                           ></span>
                           <span className="text-gray-300 text-[11px]">
-                            {formatContinentName(point.serieId || point.id)}
+                            {continentName}
                           </span>
                         </div>
                         <div className="flex items-center">
@@ -778,7 +804,7 @@ const FactorAnalysis = () => {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77-1.333.192 3 1.732 3z"
                         />
                       </svg>
                     )}
@@ -1552,7 +1578,9 @@ const FactorAnalysis = () => {
                       ? "North America"
                       : key === "south_america"
                       ? "South America"
-                      : "Oceania";
+                      : key === "oceania"
+                      ? "Oceania"
+                      : key;
 
                   if (maxIncrease.key && Math.abs(maxIncrease.change) > 5) {
                     return ` ${formattedRegion(
@@ -2060,7 +2088,9 @@ const FactorAnalysis = () => {
                         ? "North America"
                         : key === "south_america"
                         ? "South America"
-                        : "Oceania";
+                        : key === "oceania"
+                        ? "Oceania"
+                        : "Unknown Region";
 
                     return (
                       <div className="ml-13 pl-0">
