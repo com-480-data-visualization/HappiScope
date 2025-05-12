@@ -72,14 +72,7 @@ const MapVisualization = () => {
     setTimeout(() => {
       setIsLoading(false)
     }, 500)
-    
-    // Cleanup any timeline animation on unmount
-    return () => {
-      if (timelineInterval) {
-        clearInterval(timelineInterval)
-      }
-    }
-  }, [selectedYear])
+  }, [selectedYear]) // Remove timelineInterval from dependency
   
   // Update selected country when year changes
   useEffect(() => {
@@ -410,23 +403,42 @@ const MapVisualization = () => {
       }
       setTimelineAnimating(false)
     } else {
-      // Start animation
-      const interval = setInterval(() => {
+      // Start animation - ensure previous interval is cleared
+      if (timelineInterval) {
+        clearInterval(timelineInterval)
+      }
+      
+      // Create a reference to the interval that persists across renders
+      const newInterval = setInterval(() => {
+        console.log("Timeline animation tick")
         setSelectedYear(prevYear => {
           const yearIndex = years.indexOf(prevYear)
+          console.log(`Current year index: ${yearIndex}, years length: ${years.length}`)
           // If we reached the end of the timeline, go back to the beginning
           if (yearIndex >= years.length - 1) {
+            console.log("Resetting to first year")
             return years[0]
           }
           // Otherwise, move to the next year
+          console.log(`Moving to next year: ${years[yearIndex + 1]}`)
           return years[yearIndex + 1]
         })
-      }, 2000) // Change every 2 seconds
+      }, 1500) // Change every 1.5 seconds for a smoother experience
       
-      setTimelineInterval(interval)
+      // Store the interval ID so we can clear it later
+      setTimelineInterval(newInterval)
       setTimelineAnimating(true)
     }
   }
+
+  // Make sure we clean up the interval when the component unmounts
+  useEffect(() => {
+    return () => {
+      if (timelineInterval) {
+        clearInterval(timelineInterval)
+      }
+    }
+  }, [timelineInterval])
   
   // Function to handle when a country is selected from the map
   const handleSelectCountry = (country) => {
@@ -507,25 +519,46 @@ const MapVisualization = () => {
                 
                 <button 
                   onClick={toggleTimelineAnimation}
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-sm font-medium shadow-sm transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium shadow-md transition-all ${
                     timelineAnimating 
-                      ? 'bg-red-500 text-white hover:bg-red-600' 
-                      : 'bg-primary text-white hover:bg-primary/90'
+                      ? 'bg-red-500 text-white hover:bg-red-600 ring-2 ring-red-300 animate-pulse' 
+                      : 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:from-indigo-600 hover:to-blue-700'
                   }`}
                 >
                   {timelineAnimating ? (
                     <>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clipRule="evenodd" />
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                       </svg>
-                      <span>Stop</span>
+                      <span>Stop Timeline</span>
                     </>
                   ) : (
                     <>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clipRule="evenodd" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        style={{ color: 'white' }}
+                      >
+                        {/* Outer circle */}
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+
+                        {/* Centered play triangle */}
+                        <path
+                          d="M10 9.5L15 12L10 14.5V9.5Z"
+                          fill="currentColor"
+                          stroke="currentColor"
+                          strokeLinejoin="round"
+                          strokeLinecap="round"
+                        />
                       </svg>
-                      <span>Play Timeline</span>
+                      <span className="flex items-center" style={{ color: 'white' }}>
+                        Play Timeline
+                      </span>
                     </>
                   )}
                 </button>
