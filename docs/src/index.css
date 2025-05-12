@@ -23,18 +23,16 @@
 @layer components {
   .section-container {
     @apply mx-auto px-4 py-12 max-w-7xl sm:px-6 lg:px-8;
-  
-
-    .section-title {
+  }
+  .section-title {
     @apply text-3xl font-bold mb-8 text-gray-800;
-  
-
-    .card {
-      @apply bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300;
-    }
-    .timeline-play-button {
-      @apply text-white font-medium rounded-full shadow-md;
-    }
+  }
+  .card {
+    @apply bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300;
+  }
+  .timeline-play-button {
+    @apply text-white font-medium rounded-full shadow-md;
+  }
 }
 
 /* Fix body layout */
