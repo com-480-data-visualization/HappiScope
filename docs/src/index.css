@@ -23,7 +23,7 @@
 @layer components {
   .section-container {
     @apply mx-auto px-4 py-12 max-w-7xl sm:px-6 lg:px-8;
-    }
+  
 
     .section-title {
     @apply text-3xl font-bold mb-8 text-gray-800;
@@ -32,7 +32,6 @@
     .card {
       @apply bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300;
     }
-    /* Timeline play button - ensure it overrides default button styles */
     .timeline-play-button {
       @apply text-white font-medium rounded-full shadow-md;
     }
@@ -66,8 +65,8 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
+  color: inherit;
   background-color: #f9f9f9;
-  color: #333;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -94,4 +93,3 @@ button:focus-visible {
       color: #e5e7eb;
   }
 } */
-}
