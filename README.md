@@ -11,7 +11,7 @@ This repository contains the work for the COM-480 Data Visualization project, Ha
 **Quick Links:**
 
 - [**Live Website**](https://com-480-data-visualization.github.io/HappiScope/)
-- [**Screencast Demonstration**](./media/screencast.mp4)
+- [**Screencast Demonstration**](./Milestone3/screencast.mp4)
 - [**Process Book**](./Milestone3/process_book.pdf)
 - [Milestone 1 Details](./Milestone1/)
 - [Milestone 2 Details](./Milestone2/)
@@ -102,7 +102,7 @@ Progress update, core component descriptions, and planned enhancements. The full
 Our final project submission includes:
 
 - **Live website** - [https://com-480-data-visualization.github.io/HappiScope/](https://com-480-data-visualization.github.io/HappiScope/)
-- **Screencast** - [2-minute demonstration video](./media/screencast.mp4)
+- **Screencast** - [2-minute demonstration video](./Milestone3/screencast.mp4)
 - **Process book** - [Documentation of our development journey](./Milestone3/process_book.pdf)
 
 ## Team Contributions
