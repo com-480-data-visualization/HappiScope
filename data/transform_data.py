@@ -138,6 +138,7 @@ def get_country_mappings():
         "Republic of Congo": "COG",
         "Democratic Republic of the Congo": "COD",
         "Democratic Republic of Congo": "COD",
+        "Dem. Rep. Congo": "COD",
         "Costa Rica": "CRI",
         "Cote d'Ivoire": "CIV",
         "Croatia": "HRV",
@@ -390,6 +391,71 @@ def standardize_country_names(df, country_col="country"):
     return df
 
 
+def handle_missing_happiness_scores(df):
+    """
+    Handle missing happiness scores using appropriate interpolation methods.
+    
+    Args:
+        df: DataFrame containing happiness data with potential missing values
+        
+    Returns:
+        DataFrame with interpolated missing values
+    """
+    print("Handling missing happiness scores...")
+    
+    # Create a complete time series for each country
+    all_years = range(2015, 2025)
+    complete_data = []
+    
+    for country in df['country'].unique():
+        country_mask = df['country'] == country
+        country_data = df[country_mask].copy()
+        
+        # Create a complete time series for this country
+        country_years = country_data['year'].tolist()
+        missing_years = [year for year in all_years if year not in country_years]
+        
+        print(f"\nProcessing {country}:")
+        print(f"Available years: {country_years}")
+        print(f"Missing years: {missing_years}")
+        
+        # Create rows for missing years
+        for year in missing_years:
+            new_row = country_data.iloc[0].copy()  # Copy the first row as template
+            new_row['year'] = year
+            new_row['score'] = np.nan  # Set score to NaN for missing years
+            country_data = pd.concat([country_data, pd.DataFrame([new_row])], ignore_index=True)
+        
+        # Sort by year
+        country_data = country_data.sort_values('year')
+        print(f"Original scores: {country_data['score'].tolist()}")
+        
+        # Now we can properly interpolate missing values
+        if country_data['score'].isna().any():
+            # Use linear interpolation for missing values
+            interpolated_scores = country_data['score'].interpolate(method='linear')
+            country_data['score'] = interpolated_scores
+            
+            # For any remaining missing values at the start or end of the series,
+            # use forward/backward fill
+            country_data['score'] = country_data['score'].fillna(method='ffill').fillna(method='bfill')
+            
+            # # If there are still any missing values, use the global mean for that year
+            # if country_data['score'].isna().any():
+            #     year_means = df.groupby('year')['score'].mean()
+            #     for year in missing_years:
+            #         if year in year_means.index:
+            #             country_data.loc[country_data['year'] == year, 'score'] = year_means[year]
+            
+            print(f"Interpolated scores: {country_data['score'].tolist()}")
+        
+        complete_data.append(country_data)
+    
+    # Combine all country data
+    result_df = pd.concat(complete_data, ignore_index=True)
+    return result_df
+
+
 def process_happiness_data():
     """Process happiness score data from all years and combine into one dataset"""
     print("Processing happiness data...")
@@ -493,6 +559,9 @@ def process_happiness_data():
 
     # Combine all years into a single dataframe
     combined_df = pd.concat(all_data, ignore_index=True)
+    
+    # Handle missing happiness scores
+    combined_df = handle_missing_happiness_scores(combined_df)
 
     # Handle region and continent information
     if "region" not in combined_df.columns and "continent" in combined_df.columns:
