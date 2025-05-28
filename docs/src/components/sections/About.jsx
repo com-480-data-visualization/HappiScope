@@ -719,16 +719,14 @@ function About() {
                 </h3>
                 <p className="text-primary font-medium mb-1">SCIPER: 366842</p>
                 <div className="mb-2 inline-block bg-green-50 text-green-600 text-sm px-3 py-1 rounded-full">
-                  Web Implementation, Visualization & Process Book Enhancement
+                  Web UI, Visualization & Process Book Enhancement
                 </div>
                 <p className="text-sm text-gray-600 mt-3">
-                  Took the lead on developing the project's web presence and
-                  interactive visualizations. This included constructing the
-                  user interface and transforming intricate datasets into
-                  accessible and compelling visual narratives using technologies
-                  like React, D3.js, and Nivo. Rizhong also contributed to
-                  enhancing the process book by rephrasing, decorating, and
-                  beautifying its content.
+                  Led development of the project's web interface and interactive
+                  visualizations, including UI construction and transforming
+                  complex data into accessible visual narratives using React,
+                  D3.js, and Nivo. Also refined and improved the process book's
+                  content and presentation.
                 </p>
               </div>
 
@@ -757,10 +755,10 @@ function About() {
                   Sketching/Prototyping & Screencast Making
                 </div>
                 <p className="text-sm text-gray-600 mt-3">
-                  Played a crucial role in the initial design phase by creating
-                  sketches and prototypes that shaped the user interface and
-                  overall user experience. Anlan also produced the final
-                  screencast to showcase the project's functionalities.
+                  Led the initial design phase by creating sketches and
+                  prototypes that shaped the user interface and overall user
+                  experience. Anlan also produced the final screencast to
+                  showcase the project\'s functionalities.
                 </p>
               </div>
             </div>
