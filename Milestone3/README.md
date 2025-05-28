@@ -43,10 +43,10 @@ Our process book (max 8 pages) is available [here](./process_book.pdf). It detai
 The breakdown of contributions by team member:
 
 - **Chang Jin (403930)**
-  - blah blah
+  - Led the data preprocessing and analysis phases, ensuring the accuracy and consistency of the data. Additionally, Chang Jin was responsible for compiling the final process book, which detailed the project\'s methodology and key insights.
 - **Rizhong Lin (366842)**
-  - blah blah
+  - Took the lead on developing the project\'s web presence and interactive visualizations. This included constructing the user interface and transforming intricate datasets into accessible and compelling visual narratives using technologies like React, D3.js, and Nivo. Rizhong also contributed to enhancing the process book by rephrasing, decorating, and beautifying its content.
 - **Anlan Wang (403909)**
-  - blah blah
+  - Played a crucial role in the initial design phase by creating sketches and prototypes that shaped the user interface and overall user experience. Anlan also produced the final screencast to showcase the project\'s functionalities.
 
 All team members contributed equally to the conceptualization, planning, and refinement of the project.

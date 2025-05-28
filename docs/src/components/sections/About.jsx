@@ -687,12 +687,13 @@ function About() {
                 </h3>
                 <p className="text-primary font-medium mb-1">SCIPER: 403930</p>
                 <div className="mb-2 inline-block bg-blue-50 text-blue-600 text-sm px-3 py-1 rounded-full">
-                  Data Processing & Analysis
+                  Data Preprocessing, Analysis & Process Book Drafting
                 </div>
                 <p className="text-sm text-gray-600 mt-3">
-                  Specializes in transforming raw data into structured insights,
-                  focusing on statistical analysis and data patterns
-                  identification.
+                  Led the data preprocessing and analysis phases, ensuring the
+                  accuracy and consistency of the data. Additionally, Chang Jin
+                  was responsible for compiling the final process book, which
+                  detailed the project's methodology and key insights.
                 </p>
               </div>
 
@@ -708,7 +709,7 @@ function About() {
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={1.5}
+                      strokeWidth={2}
                       d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                     />
                   </svg>
@@ -718,12 +719,16 @@ function About() {
                 </h3>
                 <p className="text-primary font-medium mb-1">SCIPER: 366842</p>
                 <div className="mb-2 inline-block bg-green-50 text-green-600 text-sm px-3 py-1 rounded-full">
-                  Visualization Development
+                  Web Implementation, Visualization & Process Book Enhancement
                 </div>
                 <p className="text-sm text-gray-600 mt-3">
-                  Leads the development of interactive visualizations,
-                  implementing React Simple Maps, D3.js, and Nivo charts to
-                  create intuitive data representations.
+                  Took the lead on developing the project's web presence and
+                  interactive visualizations. This included constructing the
+                  user interface and transforming intricate datasets into
+                  accessible and compelling visual narratives using technologies
+                  like React, D3.js, and Nivo. Rizhong also contributed to
+                  enhancing the process book by rephrasing, decorating, and
+                  beautifying its content.
                 </p>
               </div>
 
@@ -749,11 +754,13 @@ function About() {
                 </h3>
                 <p className="text-primary font-medium mb-1">SCIPER: 403909</p>
                 <div className="mb-2 inline-block bg-purple-50 text-purple-600 text-sm px-3 py-1 rounded-full">
-                  UI/UX & Interaction Design
+                  Sketching/Prototyping & Screencast Making
                 </div>
                 <p className="text-sm text-gray-600 mt-3">
-                  Designs the user experience and interface elements, ensuring
-                  intuitive interaction and accessibility across the platform.
+                  Played a crucial role in the initial design phase by creating
+                  sketches and prototypes that shaped the user interface and
+                  overall user experience. Anlan also produced the final
+                  screencast to showcase the project's functionalities.
                 </p>
               </div>
             </div>
@@ -844,7 +851,7 @@ function About() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  d="M13 16h-1v-4h-1m-1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
               <p className="text-gray-700 font-medium">
@@ -1170,7 +1177,7 @@ function About() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h5M9 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
                       />
                     </svg>
                   </div>
@@ -1322,15 +1329,18 @@ function About() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium text-gray-800 mb-2">Academic Support</h3>
+                    <h3 className="text-lg font-medium text-gray-800 mb-2">
+                      Academic Support
+                    </h3>
                     <p className="text-gray-600">
                       We would like to thank{" "}
                       <span className="font-medium text-indigo-700">
                         Professor Laurent Vuillon
                       </span>{" "}
                       and the teaching assistants of the{" "}
-                      <em>COM-480 Data Visualization</em> course for their guidance
-                      and feedback throughout the development of this project.
+                      <em>COM-480 Data Visualization</em> course for their
+                      guidance and feedback throughout the development of this
+                      project.
                     </p>
                   </div>
                 </div>
@@ -1355,7 +1365,9 @@ function About() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium text-gray-800 mb-2">Data Sources</h3>
+                    <h3 className="text-lg font-medium text-gray-800 mb-2">
+                      Data Sources
+                    </h3>
                     <p className="text-gray-600">
                       We acknowledge the{" "}
                       <a
@@ -1366,10 +1378,11 @@ function About() {
                       >
                         World Happiness Report
                       </a>{" "}
-                      and its contributors for their pioneering work in measuring
-                      and analyzing global happiness. The report is produced by the
-                      United Nations Sustainable Development Solutions Network with
-                      the support of the Ernesto Illy Foundation.
+                      and its contributors for their pioneering work in
+                      measuring and analyzing global happiness. The report is
+                      produced by the United Nations Sustainable Development
+                      Solutions Network with the support of the Ernesto Illy
+                      Foundation.
                     </p>
                   </div>
                 </div>
@@ -1394,12 +1407,14 @@ function About() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium text-gray-800 mb-2">Institutions</h3>
+                    <h3 className="text-lg font-medium text-gray-800 mb-2">
+                      Institutions
+                    </h3>
                     <p className="text-gray-600">
-                      We also thank the United Nations Development Programme, the
-                      World Bank, and other institutions for making their valuable
-                      datasets publicly available for research and educational
-                      purposes.
+                      We also thank the United Nations Development Programme,
+                      the World Bank, and other institutions for making their
+                      valuable datasets publicly available for research and
+                      educational purposes.
                     </p>
                   </div>
                 </div>
@@ -1424,11 +1439,14 @@ function About() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium text-gray-800 mb-2">Open Source Community</h3>
+                    <h3 className="text-lg font-medium text-gray-800 mb-2">
+                      Open Source Community
+                    </h3>
                     <p className="text-gray-600">
-                      Special thanks to the open-source communities behind React,
-                      D3.js, Nivo, React Simple Maps, Framer Motion, Tailwind CSS,
-                      and other libraries that made this project possible.
+                      Special thanks to the open-source communities behind
+                      React, D3.js, Nivo, React Simple Maps, Framer Motion,
+                      Tailwind CSS, and other libraries that made this project
+                      possible.
                     </p>
                   </div>
                 </div>
