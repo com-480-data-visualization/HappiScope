@@ -102,7 +102,7 @@ Progress update, core component descriptions, and planned enhancements. The full
 Our final project submission includes:
 
 - **Live website** - [https://com-480-data-visualization.github.io/HappiScope/](https://com-480-data-visualization.github.io/HappiScope/)
-- **Screencast** - [2-minute demonstration video](./Milestone3/screencast.mp4)
+- **Screencast** - [2-minute demonstration video](https://www.youtube.com/watch?v=LKiJylkJAQ4)
 - **Process book** - [Documentation of our development journey](./Milestone3/process_book.pdf)
 
 ## Team Contributions
@@ -114,6 +114,6 @@ Our team worked collaboratively on all aspects of the project, with each member 
 - **Rizhong Lin (366842)**
   - Led development of the project\'s web interface and interactive visualizations, including UI construction and transforming complex data into accessible visual narratives using React, D3.js, and Nivo. Also refined and improved the process book\'s content and presentation.
 - **Anlan Wang (403909)**
-  - Led the initial design phase by creating sketches and prototypes that shaped the user interface and overall user experience. Anlan also produced the final screencast to showcase the project\'s functionalities.
+  - Led the datasets collection and the initial design phases by creating sketches and prototypes that shaped the user interface and overall user experience. Anlan also produced the final presentation video to showcase the project\'s core functionalities.
 
 All team members contributed equally to the conceptualization, planning, and refinement of the project.
