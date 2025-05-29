@@ -19,7 +19,7 @@ The website features multiple interactive visualizations:
 
 ### 2. Screencast
 
-Our 2-minute screencast demonstrates the key features and insights of HappiScope: [Link to Screencast](https://youtu.be/your-video-id)
+Our 2-minute screencast demonstrates the key features and insights of HappiScope: [Link to Screencast](https://youtu.be/LKiJylkJAQ4)
 
 The screencast:
 
@@ -47,6 +47,6 @@ The breakdown of contributions by team member:
 - **Rizhong Lin (366842)**
   - Led development of the project\'s web interface and interactive visualizations, including UI construction and transforming complex data into accessible visual narratives using React, D3.js, and Nivo. Also refined and improved the process book\'s content and presentation.
 - **Anlan Wang (403909)**
-  - Led the initial design phase by creating sketches and prototypes that shaped the user interface and overall user experience. Anlan also produced the final screencast to showcase the project\'s functionalities.
+  - Led the datasets collection and the initial design phases by creating sketches and prototypes that shaped the user interface and overall user experience. Anlan also produced the final presentation video to showcase the project\'s core functionalities.
 
 All team members contributed equally to the conceptualization, planning, and refinement of the project.
